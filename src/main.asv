@@ -1,0 +1,13 @@
+close all
+hold on
+useROS = false;
+xBaseDistance = 0.35;
+if ~useROS
+    disp('TODO: the assignment');
+    ned = Ned(transl(-xBaseDistance/2,0,0));
+    ned.robot.model.faces
+    elle = Elle(transl(xBaseDistance/2,0,0));
+end
+
+
+
