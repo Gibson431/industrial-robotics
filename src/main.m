@@ -60,6 +60,7 @@ classdef main < handle
         netpot;
         netpotCount = 16;
         substrateCount = 16;
+        origin;
     end
 
     methods(Static)
@@ -78,13 +79,13 @@ classdef main < handle
             end
 
             self.AddObjects(self);
-            self.AddNetpots(self,origin);
-            self.AddSubstrate(self,origin);
+            self.AddNetpots(self,self.origin);
+            self.AddSubstrate(self,self.origin);
 
         end
         %% Add environment
         function self = AddObjects(self)
-            origin = self.ned;
+            origin = self.ned.robot.model.base;
             x_pos = origin.t(1);
             y_pos = origin.t(2);
             z_pos = origin.t(3);
@@ -94,18 +95,19 @@ classdef main < handle
 
             table = PlaceObject("table.ply",[x_pos-0.2,y_pos+0.8,z_pos-0.95]);
             rotate(table, [0,0,1], 90, [0,0,0]);
+            self.origin = origin;
         end
         %% Add Netpots
         function self = AddNetpots(self,origin)
-            positions = {};
-            steps = self.netpotCount;
+            % positions = {};
+            % steps = self.netpotCount;
 
             % Set position of bricks based on robot location
-            for i = 1:steps
-                positions{i} = origin;
-            end
+            % for i = 1:steps
+            %     positions{i} = origin;
+            % end
 
-            self.netpot = RobotNetpots(positions);
+            self.netpot = RobotNetpots(self.netpotCount);
         end
         %% Add Substrate
         function self = AddSubstrate(self,origin)

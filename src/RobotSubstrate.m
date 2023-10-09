@@ -24,25 +24,21 @@ classdef RobotSubstrate < handle
 
     methods
         %% ...structors
-        function self = RobotSubstrate(positions)
-
-            close all;
-            clc;
-
+        function self = RobotSubstrate(substrateCount)
             self.workspaceDimensions = [-self.paddockSize(1)/2, self.paddockSize(1)/2 ...
                 ,-self.paddockSize(2)/2, self.paddockSize(2)/2 ...
                 ,0,self.maxHeight];
 
-            steps = 16;
+            steps = substrateCount;
             for i = 1:steps
-                self.substrateModel{i} = self.GetBrickModel(['Netpot',num2str(i)]);
+                self.substrateModel{i} = self.GetBrickModel(['Substrate',num2str(i)]);
 
                 if i < 9
-                    self.substrateModel{i}.base = SE3(transl(-0.2+i*0.05,0,0.04)) * SE3(trotx(pi/2)) * positions{i};
+                    self.substrateModel{i}.base = SE3(transl(0.5,-0.3+i*0.05,0.04)) * SE3(trotx(pi/2)) ;
                 end
 
                 if  9 <= i
-                    self.substrateModel{i}.base = SE3(transl(-0.2+(i-8)*0.05,0.05,0.04)) * SE3(trotx(pi/2)) * positions{i};
+                    self.substrateModel{i}.base = SE3(transl(0.55,0.-0.3+(i-8)*0.05,0.04)) * SE3(trotx(pi/2)) ;
 
                 end
 
@@ -54,7 +50,8 @@ classdef RobotSubstrate < handle
                     hold on;
                 end
             end
-
+            
+            self.substrateCount = substrateCount;
             axis equal
             if isempty(findobj(get(gca,'Children'),'Type','Light'))
                 camlight

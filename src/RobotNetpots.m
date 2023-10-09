@@ -24,44 +24,40 @@ classdef RobotNetpots < handle
 
     methods
         %% ...structors
-        function self = RobotNetpots(positions)
-
-            close all;
-            clc;
-
+        function self = RobotNetpots(numPots)
             self.workspaceDimensions = [-self.paddockSize(1)/2, self.paddockSize(1)/2 ...
                 ,-self.paddockSize(2)/2, self.paddockSize(2)/2 ...
                 ,0,self.maxHeight];
 
-            steps = 16;
+            steps = numPots;
             for i = 1:steps
                 self.netpotModel{i} = self.GetBrickModel(['Netpot',num2str(i)]);
 
                 % self.netpotModel{i}.base = SE3(trotz(pi/2)) * positions{i} * SE3(transl(0.3, 0.42, -0.5)) * SE3(trotz(pi/2)) ;
                 if i < 5
                     % self.netpotModel{i}.base = SE3(transl(-0.2+i*0.1,-0.05,0)) * SE3(trotx(pi/2));
-                    self.netpotModel{i}.base = SE3(transl(-0.2+i*0.1,-0.05,0)) * SE3(trotx(pi/2))* positions{i};
+                    self.netpotModel{i}.base = SE3(transl(-0.5,-0.3+i*0.1,0)) * SE3(trotx(pi/2));
 
                 end
 
                 if  5 <= i
                     % self.netpotModel{i}.base = SE3(trotx(-pi/2)) * SE3(transl(-0.2+(i-4)*0.1,-0.05,0.1)) ;
                     % self.netpotModel{i}.base = SE3(transl(-0.2+(i-4)*0.1,-0.05,0.02)) * SE3(trotx(pi/2));
-                    self.netpotModel{i}.base = SE3(transl(-0.2+(i-4)*0.1,-0.05,0.02)) * SE3(trotx(pi/2))* positions{i};
+                    self.netpotModel{i}.base = SE3(transl(-0.5,-0.3+(i-4)*0.1,0.02)) * SE3(trotx(pi/2));
 
                 end
 
                 if 8 < i
                     % self.netpotModel{i}.base = SE3(trotx(-pi/2)) * SE3(transl(-0.2+(i-8)*0.1,-0.05,0.2)) ;
                     % self.netpotModel{i}.base = SE3(transl(-0.2+(i-8)*0.1,-0.05,0.04)) * SE3(trotx(pi/2));
-                    self.netpotModel{i}.base = SE3(transl(-0.2+(i-8)*0.1,-0.05,0.04)) * SE3(trotx(pi/2))* positions{i};
+                    self.netpotModel{i}.base = SE3(transl(-0.5,-0.3+(i-8)*0.1,0.04)) * SE3(trotx(pi/2));
 
                 end
 
                 if 12 < i
                     % self.netpotModel{i}.base = SE3(trotx(-pi/2)) * SE3(transl(-0.5+(i-12)*0.1,-0.05,0.3)) ;
                     % self.netpotModel{i}.base = SE3(transl(-0.2+(i-12)*0.1,-0.05,0.06)) * SE3(trotx(pi/2));
-                    self.netpotModel{i}.base = SE3(transl(-0.2+(i-12)*0.1,-0.05,0.06)) * SE3(trotx(pi/2))* positions{i};
+                    self.netpotModel{i}.base = SE3(transl(-0.5,-0.3+(i-12)*0.1,0.06)) * SE3(trotx(pi/2));
 
                 end
 
@@ -102,7 +98,7 @@ classdef RobotNetpots < handle
             if nargin < 1
                 name = 'Netpot';
             end
-            [faceData,vertexData] = plyread('Net_pot.ply','tri');
+            [faceData,vertexData] = plyread('Net_Pot.ply','tri');
             link1 = Link('alpha',pi/2,'a',0,'d',0,'offset',0);
             model = SerialLink(link1,'name',name);
 
