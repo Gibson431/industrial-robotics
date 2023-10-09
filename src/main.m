@@ -111,15 +111,15 @@ classdef main < handle
         end
         %% Add Substrate
         function self = AddSubstrate(self,origin)
-            positions = {};
-            steps = self.netpotCount;
+            % positions = {};
+            % steps = self.netpotCount;
 
             % Set position of bricks based on robot location
-            for i = 1:steps
-                positions{i} = origin;
-            end
+            % for i = 1:steps
+            %     positions{i} = origin;
+            % end
 
-            self.substrate = RobotSubstrate(positions);
+            self.substrate = RobotSubstrate(16);
         end
     end
 
