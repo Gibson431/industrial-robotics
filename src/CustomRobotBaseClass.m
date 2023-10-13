@@ -98,6 +98,8 @@ classdef RobotBaseClass < handle
 
 %% PlotAndColourRobot
         % Given a robot index, add the glyphs (vertices and faces) and colour them in if data is available 
+        % allegedly no way to remove wrist from plot colour bot
+        
         function PlotAndColourRobot(self)
             if isempty(self.homeQ)
                 self.homeQ = zeros(1,self.model.n);
