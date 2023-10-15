@@ -1,5 +1,5 @@
-classdef RobotBaseClass < handle
-    %% RobotBaseClass The base robot class from which other UTS robot models should inherit 
+classdef CustomRobotBaseClass < handle
+    %% CustomRobotBaseClass The base robot class from which other UTS robot models should inherit 
 
     %#ok<*TRYNC>    
 
@@ -52,14 +52,14 @@ classdef RobotBaseClass < handle
     methods
     
 %% General class for multiDOF robot simulation
-        function self = RobotBaseClass()
+        function self = CustomRobotBaseClass()
             % This is intentionally left empty. Implement the class
             % constructor in the inhereting class.
             pause(0.001);
             try 
                 self.name = [self.plyFileNameStem,datestr(now,'yyyymmddTHHMMSSFFF')];
             catch
-                self.name = ['RobotBaseClass',datestr(now,'yyyymmddTHHMMSSFFF')];
+                self.name = ['CustomRobotBaseClass',datestr(now,'yyyymmddTHHMMSSFFF')];
                 warning(['Please include a variable called plyFileNameStem in your inherreting class. For now the robot is named: ',self.name])                
             end
             
@@ -98,6 +98,8 @@ classdef RobotBaseClass < handle
 
 %% PlotAndColourRobot
         % Given a robot index, add the glyphs (vertices and faces) and colour them in if data is available 
+        % allegedly no way to remove wrist from plot colour bot
+        
         function PlotAndColourRobot(self)
             if isempty(self.homeQ)
                 self.homeQ = zeros(1,self.model.n);
@@ -200,7 +202,7 @@ classdef RobotBaseClass < handle
             roughMinMax = sum(abs(self.model.d) + abs(self.model.a));
             self.workspace = [-roughMinMax roughMinMax -roughMinMax roughMinMax -0.01 roughMinMax]; 
 
-            self.model.plot3d(self.homeQ,'noarrow','workspace',self.workspace,'view',[ax,by],'notiles');            
+            self.model.plot3d(self.homeQ,'noarrow','nowrist','workspace',self.workspace,'view',[ax,by],'notiles');            
 
             % Check if a single surface has been added by plot3d
             if self.CountTiledFloorSurfaces() - initialSurfaceCount == 1
