@@ -8,8 +8,8 @@ classdef Ned
             if nargin ~= 0
                 baseTr = tr;
             end
-            self.robot = Omron(baseTr);
-            self.robot.model.animate([0 -pi/2 0 0 0 0]);
+            self.robot = omronTM5(baseTr);
+            self.robot.model.animate([0 pi/2 0 0 0 0]);
         end
     end
 end

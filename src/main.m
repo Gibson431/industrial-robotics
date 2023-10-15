@@ -71,11 +71,11 @@ classdef main < handle
             X_BASE_DISTANCE = 0.6;
 
             if nargin == 0
-                self.ned = Ned(transl(-X_BASE_DISTANCE/2,0,0));
-                self.elle = Elle(transl(X_BASE_DISTANCE/2,0,0));
+                self.ned = Ned(transl(X_BASE_DISTANCE/2,0,0));
+                self.elle = Elle(transl(-X_BASE_DISTANCE/2,0,0));
             else
-                self.ned = Ned(transl((-X_BASE_DISTANCE/2)+x,y,z));
-                self.elle = Elle(transl((X_BASE_DISTANCE/2)+x,y,z));
+                self.ned = Ned(transl((X_BASE_DISTANCE/2)+x,y,z));
+                self.elle = Elle(transl((-X_BASE_DISTANCE/2)+x,y,z));
             end
 
             self.AddObjects(self);
@@ -85,16 +85,39 @@ classdef main < handle
         end
         %% Add environment
         function self = AddObjects(self)
+
             origin = self.ned.robot.model.base;
             x_pos = origin.t(1);
             y_pos = origin.t(2);
             z_pos = origin.t(3);
 
-            flats = PlaceObject("2_Flats.ply",[x_pos+0.2,y_pos-0,z_pos+0]);
+            flats = PlaceObject("2_Flats.ply",[x_pos-0.3,y_pos,z_pos]);
             rotate(flats, [0,0,1], 90, [0,0,0]);
 
-            table = PlaceObject("table.ply",[x_pos-0.2,y_pos+0.8,z_pos-0.95]);
+            table = PlaceObject("table.ply",[x_pos-0.65,y_pos+0.85,z_pos-0.95]);
             rotate(table, [0,0,1], 90, [0,0,0]);
+
+            PlaceObject("table.ply",[x_pos+0.4,y_pos+0.4,z_pos-0.95]);
+
+
+            PlaceObject("Security_Fence.ply",[x_pos-2,y_pos-2,z_pos-0.95]);
+            PlaceObject("Security_Fence.ply",[x_pos,y_pos-2,z_pos-0.95]);
+
+            PlaceObject("wall.ply",[x_pos-0.8,y_pos+0.4,z_pos]);
+            wall = PlaceObject("wall.ply",[x_pos-1.9,y_pos-1.5,z_pos]);
+            rotate(wall, [0,0,1], 90, [0,0,0]);
+            
+            security_cam = PlaceObject("SecurityCam.ply",[x_pos+1.2,y_pos-0.4,z_pos+0.8]);
+            rotate(security_cam, [0,0,1], 180, [0,0,0]);
+
+            e_stop = PlaceObject("e-stop.ply",[x_pos-2,y_pos+0.3,z_pos-0.4]);
+            rotate(e_stop, [1,0,0], 90, [0,0,0]);
+
+            person = PlaceObject("person.ply",[x_pos-0.3,y_pos+1.6,z_pos-0.95]);
+            rotate(person, [0,0,1], 135, [0,0,0]);
+
+            PlaceObject("FireExtinguisher.ply",[x_pos+0.9,y_pos-1.5,z_pos-0.95]);
+
             self.origin = origin;
         end
         %% Add Netpots
@@ -119,7 +142,7 @@ classdef main < handle
             %     positions{i} = origin;
             % end
 
-            self.substrate = RobotSubstrate(16);
+            self.substrate = RobotSubstrate(self.substrateCount);
         end
     end
 
