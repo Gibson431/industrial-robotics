@@ -79,8 +79,8 @@ classdef main < handle
             end
 
             self.AddObjects(self);
-            self.AddNetpots(self,self.origin);
-            self.AddSubstrate(self,self.origin);
+            self.AddNetpots(self);
+            self.AddSubstrate(self);
 
         end
         %% Add environment
@@ -90,6 +90,9 @@ classdef main < handle
             x_pos = origin.t(1);
             y_pos = origin.t(2);
             z_pos = origin.t(3);
+
+            surf([-2.5,-2.5;+1.5,+1.5] ,[-3.5,+0.4;-3.5,+0.4] ,[z_pos-0.95,z_pos-0.95;...
+                z_pos-0.95,z_pos-0.95],'CData',imread('concrete.jpg'),'FaceColor','texturemap');
 
             flats = PlaceObject("2_Flats.ply",[x_pos-0.3,y_pos,z_pos]);
             rotate(flats, [0,0,1], 90, [0,0,0]);
@@ -121,7 +124,7 @@ classdef main < handle
             self.origin = origin;
         end
         %% Add Netpots
-        function self = AddNetpots(self,origin)
+        function self = AddNetpots(self)
             % positions = {};
             % steps = self.netpotCount;
 
@@ -133,7 +136,7 @@ classdef main < handle
             self.netpot = RobotNetpots(self.netpotCount);
         end
         %% Add Substrate
-        function self = AddSubstrate(self,origin)
+        function self = AddSubstrate(self)
             % positions = {};
             % steps = self.netpotCount;
 
