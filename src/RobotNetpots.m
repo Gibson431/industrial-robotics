@@ -33,36 +33,24 @@ classdef RobotNetpots < handle
             for i = 1:steps
                 self.netpotModel{i} = self.GetBrickModel(['Netpot',num2str(i)]);
 
-                % self.netpotModel{i}.base = SE3(trotz(pi/2)) * positions{i} * SE3(transl(0.3, 0.42, -0.5)) * SE3(trotz(pi/2)) ;
                 if i < 5
-                    % self.netpotModel{i}.base = SE3(transl(-0.2+i*0.1,-0.05,0)) * SE3(trotx(pi/2));
                     self.netpotModel{i}.base = SE3(transl(-0.3,-0.3+i*0.1,0.06)) * SE3(trotx(pi/2));
-
                 end
 
                 if  5 <= i
-                    % self.netpotModel{i}.base = SE3(trotx(-pi/2)) * SE3(transl(-0.2+(i-4)*0.1,-0.05,0.1)) ;
-                    % self.netpotModel{i}.base = SE3(transl(-0.2+(i-4)*0.1,-0.05,0.02)) * SE3(trotx(pi/2));
                     self.netpotModel{i}.base = SE3(transl(-0.3,-0.3+(i-4)*0.1,0.04)) * SE3(trotx(pi/2));
-
                 end
 
                 if 8 < i
-                    % self.netpotModel{i}.base = SE3(trotx(-pi/2)) * SE3(transl(-0.2+(i-8)*0.1,-0.05,0.2)) ;
-                    % self.netpotModel{i}.base = SE3(transl(-0.2+(i-8)*0.1,-0.05,0.04)) * SE3(trotx(pi/2));
                     self.netpotModel{i}.base = SE3(transl(-0.3,-0.3+(i-8)*0.1,0.02)) * SE3(trotx(pi/2));
-
                 end
 
                 if 12 < i
-                    % self.netpotModel{i}.base = SE3(trotx(-pi/2)) * SE3(transl(-0.5+(i-12)*0.1,-0.05,0.3)) ;
-                    % self.netpotModel{i}.base = SE3(transl(-0.2+(i-12)*0.1,-0.05,0.06)) * SE3(trotx(pi/2));
-                    self.netpotModel{i}.base = SE3(transl(-0.3,-0.3+(i-12)*0.1,0)) * SE3(trotx(pi/2));
-
+                   self.netpotModel{i}.base = SE3(transl(-0.3,-0.3+(i-12)*0.1,0)) * SE3(trotx(pi/2));
                 end
 
                 % Plot 3D model
-                plot3d(self.netpotModel{i},0,'workspace',self.workspaceDimensions,'view',[-30,30],'delay',0,'noarrow');
+                plot3d(self.netpotModel{i},0,'workspace',self.workspaceDimensions,'view',[-30,30],'delay',0,'noarrow','nowrist');
 
                 % Hold on after the first plot (if already on there's no difference)
                 if i == 1
