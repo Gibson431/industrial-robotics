@@ -16,7 +16,8 @@ classdef CustomRobotBaseClass < handle
         name;
 
         %> workspace (this changes based on the DH parameters)  
-        workspace = [-10 10 -10 10 -0.01 10];
+        % workspace = [-10 10 -10 10 -0.01 10];
+        workspace;
 
         %> The home location in radians 
         homeQ = [];
@@ -39,7 +40,7 @@ classdef CustomRobotBaseClass < handle
     end
 
     properties (Access = private)
-        delaySecondsForInnerAnimation = 0.2;
+        delaySecondsForInnerAnimation = 0.01;
         stepsForInnerAnimation = 20;        
     end   
     
@@ -200,7 +201,7 @@ classdef CustomRobotBaseClass < handle
             [ax,by] = view;
             
             roughMinMax = sum(abs(self.model.d) + abs(self.model.a));
-            self.workspace = [-roughMinMax roughMinMax -roughMinMax roughMinMax -0.01 roughMinMax]; 
+            % self.workspace = [-roughMinMax roughMinMax -roughMinMax roughMinMax -0.01 roughMinMax]; 
 
             self.model.plot3d(self.homeQ,'noarrow','nowrist','workspace',self.workspace,'view',[ax,by],'notiles');            
 

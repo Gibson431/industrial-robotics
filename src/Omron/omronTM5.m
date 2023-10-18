@@ -1,4 +1,4 @@
-classdef omronTM5 < RobotBaseClass
+classdef omronTM5 < CustomRobotBaseClass
     %% LinearUR3 UR3 on a non-standard linear rail created by a student
 
     properties(Access = public)
@@ -13,7 +13,7 @@ classdef omronTM5 < RobotBaseClass
                 baseTr = eye(4);
             end
 
-            self.model.base = self.model.base.T * baseTr ;
+            self.model.base = self.model.base.T * baseTr;
 
             self.PlotAndColourRobot();
             % self.model.teach;
@@ -30,7 +30,6 @@ classdef omronTM5 < RobotBaseClass
             link(5) = Link('d',0.106,'a',0,'alpha',pi/2,'qlim',deg2rad([-360,360]), 'offset',0);
             link(6) = Link('d',0.1132,'a',0,'alpha',0,'qlim',deg2rad([-360,360]), 'offset', 0);
 
-
             % Incorporate joint limits
             link(1).qlim = [-270 270] * pi/180;
             link(2).qlim = [-180 180] * pi/180;
@@ -38,10 +37,6 @@ classdef omronTM5 < RobotBaseClass
             link(4).qlim = [-180 180] * pi/180;
             link(5).qlim = [-180 180] * pi/180;
             link(6).qlim = [-270 270] * pi/180;
-
-
-            % link(3).offset = -pi/2;
-            % link(5).offset = -pi/2;
 
             self.model = SerialLink(link,'name',self.name);
 
