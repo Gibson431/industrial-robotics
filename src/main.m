@@ -268,3 +268,19 @@ end
     % 
     %     end
 
+
+ %% e stop
+%   
+%   % Define the COM port and button pin
+% comPort = 'COM3'; 
+% buttonPin = 'D2'; % Replace with the actual pin connected to the button
+% 
+% % Create an instance of the class
+% buttonControl = ArduinoButtonControl(comPort, buttonPin);
+% 
+% % Call the method to stop the code when the button is pressed
+% buttonControl.stopWhenButtonPressed();
+% 
+% % Clean up when you're done
+% clear buttonControl;
+%   
