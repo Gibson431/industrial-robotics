@@ -16,6 +16,11 @@ classdef Elle
             self.robot.model.animate([0 -pi/2 0 0 0 pi/2]);
             stepElle(self);
         end
+        
+%% initial guesses
+% <5 |  0.6283    0.0000    0.1257   -0.5027    0.2513   -0.6283
+
+        
         %% Moving ELLE
         function self =  stepElle(self)
 

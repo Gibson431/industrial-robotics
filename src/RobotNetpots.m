@@ -34,11 +34,11 @@ classdef RobotNetpots < handle
                 self.netpotModel{i} = self.GetBrickModel(['Netpot',num2str(i)]);
 
                 if i < 5
-                    self.netpotModel{i}.base = SE3(transl(-0.3,-0.3+i*0.1,0.06)) * SE3(trotx(pi/2));
+                    self.netpotModel{i}.base = SE3(transl(-0.3,-0.3+i*0.1,0.06)) * SE3(trotx(pi/2)); %(-0.3,-0.4?,0.06)
                 end
 
                 if  5 <= i
-                    self.netpotModel{i}.base = SE3(transl(-0.3,-0.3+(i-4)*0.1,0.04)) * SE3(trotx(pi/2));
+                    self.netpotModel{i}.base = SE3(transl(-0.3,-0.3+(i-4)*0.1,0.04)) * SE3(trotx(pi/2)); % (-0.3,-0.2?,0.04)
                 end
 
                 if 8 < i
