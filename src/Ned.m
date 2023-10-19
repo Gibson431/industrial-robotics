@@ -13,7 +13,7 @@ classdef Ned < omronTM5
             end
             self.model.base = baseTr;
             self.model.animate([0 pi/2 0 0 0 0]);
-            self.stepNed();
+            % self.stepNed();
         end
         %% Move Robot
         function self =  stepNed(self)
