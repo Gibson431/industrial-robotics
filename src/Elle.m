@@ -14,7 +14,7 @@ classdef Elle
             end
             self.robot = UR3(baseTr);
             self.robot.model.animate([0 -pi/2 0 0 0 pi/2]);
-            stepElle(self);
+            % stepElle(self);
         end
         %% Moving ELLE
         function self =  stepElle(self)
