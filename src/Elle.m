@@ -6,15 +6,15 @@ classdef Elle
     end
     methods
         function self = Elle(tr)
-%             close all;
-%             clc;
+            close all;
+            clc;
             baseTr = transl(0,0,0);
             if nargin ~= 0
                 baseTr = tr;
             end
             self.robot = UR3(baseTr);
             self.robot.model.animate([0 -pi/2 0 0 0 pi/2]);
-%             stepElle(self);
+            stepElle(self);
         end
         %% Moving ELLE
         function self =  stepElle(self)
@@ -86,7 +86,7 @@ classdef Elle
 
     function self =  moveElle(self,nextJointState)
         currentJointState = self.robot.model.getpos;
-        steps = 20;1
+        steps = 20;
         s = lspb(0,1,steps);
         qMatrix = nan(steps,6);
         for k = 1:steps
