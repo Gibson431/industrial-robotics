@@ -43,7 +43,7 @@ classdef RobotSubstrate < handle
                 end
 
                 % Plot 3D model
-                plot3d(self.substrateModel{i},0,'workspace',self.workspaceDimensions,'view',[-30,30],'delay',0,'noarrow','nowrist');
+                plot3d(self.substrateModel{i},0,'workspace',self.workspaceDimensions,'view',[-30,30],'delay',0,'noarrow');
 
                 % Hold on after the first plot (if already on there's no difference)
                 if i == 1
