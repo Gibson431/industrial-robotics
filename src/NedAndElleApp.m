@@ -30,8 +30,9 @@ classdef NedAndElleApp < matlab.apps.AppBase
     properties (Access = private)
         onePanelWidth = 576;
         twoPanelWidth = 768;
+        eStop = false;
+        environment;
     end
-
     methods (Access = private)
         function Slider1ValueChanged(app, event)
             value = event.Value;
@@ -49,7 +50,7 @@ classdef NedAndElleApp < matlab.apps.AppBase
         end
 
         function EStopValueChanged(app, event)
-            disp(event);
+            app.eStop = event.Value;
         end
 
         function updateAppLayout(app, event)
@@ -157,14 +158,14 @@ classdef NedAndElleApp < matlab.apps.AppBase
 
 
             % Create UIAxes
-            app.UIAxes = uiaxes(app.CentreGrid);
-            view(app.UIAxes, [1 1 1]);
-            axis(app.UIAxes, 'tight');
-            grid(app.UIAxes, "on");
-            hold(app.UIAxes, "on");
-            title(app.UIAxes, 'Title');
-            app.UIAxes.Layout.Row = 1;
-            app.UIAxes.Layout.Column = 1;
+            % app.UIAxes = uiaxes(app.CentreGrid);
+            % view(app.UIAxes, [1 1 1]);
+            % axis(app.UIAxes, 'tight');
+            % grid(app.UIAxes, "on");
+            % hold(app.UIAxes, "on");
+            % title(app.UIAxes, 'Title');
+            % app.UIAxes.Layout.Row = 1;
+            % app.UIAxes.Layout.Column = 1;
 
             % axes(app.UIAxes);
             % xlabel(app.UIAxes, 'X');
@@ -217,9 +218,52 @@ classdef NedAndElleApp < matlab.apps.AppBase
 
         end
 
-        function createEnvironment(app)
-            disp(ishold())
-            app.NedRobot = Ned(transl(0.5,0,0));
+        function app = createEnvironment(app)
+            origin = SE3(transl(0,0,0));
+            app.NedRobot = Ned(origin.T * transl(0.5,0,0));
+
+
+            x_pos = origin.t(1);
+            y_pos = origin.t(2);
+            z_pos = origin.t(3);
+            hold on;
+            surface = surf([-2.5,-2.5;+1.5,+1.5] ,[-3.5,+0.4;-3.5,+0.4] ,[z_pos-0.95,z_pos-0.95;...
+                z_pos-0.95,z_pos-0.95],'CData',imread('concrete.jpg'),'FaceColor','texturemap');
+            app.environment = [app.environment, surface];
+
+
+            flats = PlaceObject("2_Flats.ply",[x_pos-0.3,y_pos,z_pos]);
+            rotate(flats, [0,0,1], 90, [0,0,0]);
+            app.environment = [app.environment, flats];
+
+            table = PlaceObject("table.ply",[x_pos-0.65,y_pos+0.85,z_pos-0.95]);
+            rotate(table, [0,0,1], 90, [0,0,0]);
+            app.environment = [app.environment, table];
+
+            app.environment = [app.environment, PlaceObject("table.ply",[x_pos+0.4,y_pos+0.4,z_pos-0.95])];
+
+            app.environment = [app.environment, PlaceObject("Security_Fence.ply",[x_pos-2,y_pos-2,z_pos-0.95])];
+            app.environment = [app.environment, PlaceObject("Security_Fence.ply",[x_pos,y_pos-2,z_pos-0.95])];
+
+            app.environment = [app.environment, PlaceObject("wall.ply",[x_pos-0.8,y_pos+0.4,z_pos])];
+            wall = PlaceObject("wall.ply",[x_pos-1.9,y_pos-1.5,z_pos]);
+            rotate(wall, [0,0,1], 90, [0,0,0]);
+            app.environment = [app.environment, wall];
+
+            security_cam = PlaceObject("SecurityCam.ply",[x_pos+1.2,y_pos-0.4,z_pos+0.8]);
+            rotate(security_cam, [0,0,1], 180, [0,0,0]);
+            app.environment = [app.environment, security_cam];
+
+            e_stop = PlaceObject("e-stop.ply",[x_pos-2,y_pos+0.3,z_pos-0.4]);
+            rotate(e_stop, [1,0,0], 90, [0,0,0]);
+            app.environment = [app.environment, e_stop];
+
+            person = PlaceObject("person.ply",[x_pos-0.3,y_pos+1.6,z_pos-0.95]);
+            rotate(person, [0,0,1], 135, [0,0,0]);
+            app.environment = [app.environment, person];
+
+            app.environment = [app.environment, PlaceObject("FireExtinguisher.ply",[x_pos+0.9,y_pos-1.5,z_pos-0.95])];
+
         end
     end
 
@@ -237,8 +281,10 @@ classdef NedAndElleApp < matlab.apps.AppBase
 
             % Create Environment
             % pause(5);
-            createEnvironment(app);
+            app.createEnvironment();
 
+            app.processLoop();
+            
             if nargout == 0
                 clear app
             end
@@ -249,6 +295,17 @@ classdef NedAndElleApp < matlab.apps.AppBase
 
             % Delete UIFigure when app is deleted
             delete(app.UIFigure)
+        end
+
+        function app = processLoop(app)
+            while (true)
+                disp(app.environment);
+                if (app.EStopSwitch.Value == "Off")
+                    app.NedRobot.doStep();
+                else
+                    pause(0.1);
+                end
+            end
         end
     end
 end
