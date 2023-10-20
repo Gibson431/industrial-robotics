@@ -51,12 +51,13 @@ classdef Elle < UR3
                 
                 waypoint1 = transl(bx_pos + 0.1,by_pos, bz_pos) * troty(-pi/2) * trotz(-pi);
                 waypoint2 = transl(bx_pos+0.02,by_pos,bz_pos) * troty(-pi/2) * trotz(-pi);
+                
                 waypoint3Guess =    [0.3770   -0.8796    0.6283    0.1257    1.7593         0]
                 waypoint4Guess =    [0.3770   -0.8796    0.6283    0.1257    1.7593         0]
 
                 
                 if i <= 4
-                    waypoint4 = transl(-0.1,0.3-i*0.1,0.2) * troty(-pi/2);
+                    waypoint4 = transl(-0.1,0.4-i*0.1,0.2) * troty(-pi/2);
                     waypoint3 = waypoint4 * transl(0,0,0.2);
 
                     waypoint = {waypoint1,waypoint2,waypoint3,waypoint4};
@@ -68,7 +69,7 @@ classdef Elle < UR3
                 end
                 
                 if 4 < i
-                    waypoint4 = transl(-0.15,0.3-(i-4)*0.05,0.1)* troty(-pi/2);
+                    waypoint4 = transl(-0.15,0.4-(i-4)*0.05,0.2)* troty(-pi/2);
                     waypoint3 = waypoint4 * transl(0,0,0.2);
 
                     waypoint = {waypoint1,waypoint2,waypoint3,waypoint4};
@@ -82,7 +83,7 @@ classdef Elle < UR3
                 end
                 
                 if 8 < i
-                    waypoint4 = transl(0.2,0.3-(i-8)*0.05,0.1)* troty(-pi/2);
+                    waypoint4 = transl(0.2,0.4-(i-8)*0.05,0.2)* troty(-pi/2);
                     waypoint3 = waypoint4 * transl(0,0,0.2);
 
                     waypoint = {waypoint1,waypoint2,waypoint3,waypoint4};
@@ -94,7 +95,7 @@ classdef Elle < UR3
                 end
                 
                 if 12 < i
-                    waypoint4 = transl(0.25,0.3-(i-12)*0.05,0.1)* troty(-pi/2);
+                    waypoint4 = transl(0.25,0.4-(i-12)*0.05,0.2)* troty(-pi/2);
                     waypoint3 = waypoint4 * transl(0,0,0.2);
 
                     waypoint = {waypoint1,waypoint2,waypoint3,waypoint4};
