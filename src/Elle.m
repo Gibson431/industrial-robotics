@@ -13,12 +13,12 @@ classdef Elle
                 baseTr = tr;
             end
             self.robot = UR3(baseTr);
-%             self.robot.model.animate([0 -pi/2 0 0 0 pi/2]);
+            self.robot.model.animate([0 -pi/2 0 0 0 pi/2]);
 
-            self.netpot = RobotNetpots(self.netpotCount);
-            self.robot.model.teach();
+%             self.netpot = RobotNetpots(self.netpotCount);
+%             self.robot.model.teach();
             
-%             stepElle(self);
+            stepElle(self);
         end
         
         %% initial guesses
