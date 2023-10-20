@@ -32,7 +32,7 @@ classdef omronTM5 < CustomRobotBaseClass
 
             % Incorporate joint limits
             link(1).qlim = [-270 270] * pi/180;
-            link(2).qlim = [-180 180] * pi/180;
+            link(2).qlim = [-90 90] * pi/180;
             link(3).qlim = [-155 155] * pi/180;
             link(4).qlim = [-180 180] * pi/180;
             link(5).qlim = [-180 180] * pi/180;
