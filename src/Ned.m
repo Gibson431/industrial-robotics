@@ -14,12 +14,25 @@ classdef Ned < omronTM5
             self.model.base = baseTr;
             self.model.animate([0 pi/2 0 0 0 0]);
             self.stepNed();
+            
+%             self.substrate = RobotSubstrate(self.substrateCount);
+%             self.model.teach();
+
         end
         %% Move Robot
         function self =  stepNed(self)
 
             self.substrate = RobotSubstrate(self.substrateCount);
             steps = length(self.substrate.substrateModel);
+            
+            %initial guesses
+            initialGuess = [
+                0.3770    1.0053   -2.0019   -0.5027    1.5080    1.7907
+                0.1885    1.0053   -2.0019   -0.5027    1.5080    1.7907
+                0    0.9739   -1.9478   -0.5655    1.5080    1.7907
+                -0.1885    0.9425   -1.8937   -0.5027    1.5708    1.7907
+                ]
+
 
             for i = 1 : steps
                 bTr = self.substrate.substrateModel{i}.base;
@@ -34,6 +47,8 @@ classdef Ned < omronTM5
                 if i <= 4
                     waypoint3 = transl(-0.2,-0.2,0.9) * trotx(-pi);
                     waypoint4 = transl(-0.05,0.3-i*0.1,0.2) * trotx(-pi);
+                    
+                    guess = initialGuess(1,:);
 
                     waypoint = {waypoint1,waypoint2,waypoint3,waypoint4};
                     wSteps = length(waypoint);
@@ -41,41 +56,47 @@ classdef Ned < omronTM5
 
                 if 4 < i
                     waypoint3 = transl(-0.2,-0.2,0.9) * trotx(-pi);
-
                     waypoint4 = transl(-0.025,0.3-(i-4)*0.05,0.2) * trotx(-pi);
+                    
+                    guess = initialGuess(2,:);
+                    
                     waypoint = {waypoint1,waypoint2,waypoint3,waypoint4};
-
                     wSteps = length(waypoint);
 
                 end
 
                 if 8 < i
                     waypoint3 = transl(-0.2,-0.2,0.9) * trotx(-pi);
-
                     waypoint4 = transl(0.025,0.3-(i-8)*0.05,0.2) * trotx(-pi);
-                    waypoint = {waypoint1,waypoint2,waypoint3,waypoint4};
+                    
+                    guess = initialGuess(3,:);
 
+                    waypoint = {waypoint1,waypoint2,waypoint3,waypoint4};
                     wSteps = length(waypoint);
 
                 end
 
                 if 12 < i
                     waypoint3 = transl(-0.2,-0.2,0.9) * trotx(-pi);
-
                     waypoint4 = transl(0.05,0.3-(i-12)*0.05,0.2) * trotx(-pi);
-                    waypoint = {waypoint1,waypoint2,waypoint3,waypoint4};
+                    
+                    guess = initialGuess(4,:);
 
+                    waypoint = {waypoint1,waypoint2,waypoint3,waypoint4};
                     wSteps = length(waypoint);
 
                 end
-
+                
+              
                 for j = 1:wSteps
-                    nextJointState = self.model.ikcon(waypoint{j});
+                    
+                    nextJointState = self.model.ikcon(waypoint{j},guess);
                     % nextJointState = self.model.ikine(waypoint{j},'mask',[1 1 1 1 1 1]);
                     if j<=2
                         % nextJointState = self.model.ikine(waypoint{j},'mask',[1 1 1 0 0 0]);
                         self.moveNed(nextJointState);
                     end
+                    
                     if 2<j
                         self.moveNedSubstrate(steps,i,nextJointState);
                     end
