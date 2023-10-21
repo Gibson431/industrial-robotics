@@ -37,7 +37,7 @@ classdef Elle < UR3
                 end
 
                 if length(self.stepList) == 1
-                    self.routeCount = self.routeCount + 1;
+                    self.routeCount = self.routeCount + 1
                     self.holdingObject = false;
                     self.calcNextRoute();
                     self.stepsList = [];

@@ -221,8 +221,8 @@ classdef NedAndElleApp < matlab.apps.AppBase
         function app = createEnvironment(app)
             origin = SE3(transl(0,0,0));
             hold on;
-            app.NedRobot = Ned(origin.T * transl(0.5,-0.5,0));
-            % app.ElleRobot = Elle(origin.T * transl(-0.5,-0.5,0));
+            % app.NedRobot = Ned(origin.T * transl(0.5,-0.25,0));
+            app.ElleRobot = Elle(origin.T * transl(-0.5,-0.25,0));
 
             x_pos = origin.t(1);
             y_pos = origin.t(2);
@@ -302,8 +302,8 @@ classdef NedAndElleApp < matlab.apps.AppBase
             while (true)
                 disp(app.environment);
                 if (app.EStopSwitch.Value == "Off")
-                    app.NedRobot.doStep();
-                    % app.ElleRobot.doStep();
+                    % app.NedRobot.doStep();
+                    app.ElleRobot.doStep();
                 else
                     pause(0.1);
                 end
