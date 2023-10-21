@@ -220,13 +220,14 @@ classdef NedAndElleApp < matlab.apps.AppBase
 
         function app = createEnvironment(app)
             origin = SE3(transl(0,0,0));
-            app.NedRobot = Ned(origin.T * transl(0.5,0,0));
-
+            hold on;
+            app.NedRobot = Ned(origin.T * transl(0.5,-0.5,0));
+            % app.ElleRobot = Elle(origin.T * transl(-0.5,-0.5,0));
 
             x_pos = origin.t(1);
             y_pos = origin.t(2);
             z_pos = origin.t(3);
-            hold on;
+            
             surface = surf([-2.5,-2.5;+1.5,+1.5] ,[-3.5,+0.4;-3.5,+0.4] ,[z_pos-0.95,z_pos-0.95;...
                 z_pos-0.95,z_pos-0.95],'CData',imread('concrete.jpg'),'FaceColor','texturemap');
             app.environment = [app.environment, surface];
@@ -302,6 +303,7 @@ classdef NedAndElleApp < matlab.apps.AppBase
                 disp(app.environment);
                 if (app.EStopSwitch.Value == "Off")
                     app.NedRobot.doStep();
+                    % app.ElleRobot.doStep();
                 else
                     pause(0.1);
                 end
