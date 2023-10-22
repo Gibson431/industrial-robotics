@@ -1,36 +1,62 @@
-classdef Gripper
- properties
-        % robot;
-        
+classdef Gripper < handle
+    properties (Access = public)
+        gripperLeft;
+        gripperRight;
+        base;
     end
+
     methods
-        function self = Gripper
-           
-            g1L1 = Link('d',0,'a',0.05,'alpha',pi,'qlim',[-pi pi]) 
-            g1L2 = Link('d',0,'a',0.05,'alpha',pi/2,'qlim',[-pi pi]) 
-            g1L3 = Link('d',0,'a',0.02,'alpha',pi,'qlim',[-pi pi])
-            
-            gripper1 = SerialLink([g1L1 g1L2 g1L3],'name','gripper')          
+        function self = Gripper()
+            % self.base = tr;
+            self.CreateModel();
+        end
+        function self = CreateModel(self)
+            % L(1) = Link('d',0,'a',0.05,'alpha',pi,'qlim',[-pi pi]);
+            % L(2) = Link('d',0,'a',0.05,'alpha',pi/2,'qlim',[-pi pi]);
+            % L(3) = Link('d',0,'a',0.02,'alpha',pi,'qlim',[-pi pi]);
 
-            % self.robot = UR3(baseTr);
-            self.model.base = baseTr;
-            self.model.animate([0 -pi/2 0 0 0 pi/2]);
+            L(1) = Link('d',0,'a',0.05,'alpha',0,'qlim',[-pi pi],'offset',0);
+            L(2) = Link('d',0,'a',0.05,'alpha',0,'qlim',[-pi pi],'offset',0);
+            L(3) = Link('d',0,'a',0.05,'alpha',0,'qlim',[-pi pi],'offset',0);
 
-            self.netpot = RobotNetpots(self.netpotCount);
-            % self.doStep();
-            % self.model.teach();
-            
-            q = zeros(1,gripper1.n); 
 
-            gripper1.plot(q); 
+            self.gripperLeft = SerialLink(L,'name','gripperLeft');
+            self.gripperLeft.base = self.base
 
-            gQ = robot.model.fkine(robot.model.getpos)
+            R(1) = Link('d',0,'a',-0.05,'alpha',-pi,'qlim',[-pi pi],'offset',0);
+            R(2) = Link('d',0,'a',-0.05,'alpha',0,'qlim',[-pi pi],'offset',pi/4);
+            R(3) = Link('d',0,'a',-0.05,'alpha',0,'qlim',[-pi pi],'offset',pi/8);
 
-            gripper1.base = gQ
+            self.gripperRight = SerialLink(R,'name','gripperLeft');
+            self.gripperRight.base = self.base 
 
-            gripper1.plot(gripper1.getpos, 'nowrist','notiles');
+
+            % % self.robot = UR3(baseTr);
+            % self.model.base = baseTr;
+            % self.model.animate([0 -pi/2 0 0 0 pi/2]);
+            %
+            % self.netpot = RobotNetpots(self.netpotCount);
+            % % self.doStep();
+            % % self.model.teach();
+            %
+            % q = zeros(1,self.gripperLeft.n);
+            %
+            % self.gripperLeft.plot(q);
+            %
+            % gQ = robot.model.fkine(robot.model.getpos)
+            %
+            % self.gripperLeft.base = gQ
+            %
+            hold on;
+            self.gripperLeft.plot([0,0,0], 'nowrist','notiles');
+            self.gripperRight.plot([0,0,0], 'nowrist','notiles');
 
         end
-
+        % function self = Plot(self,tr)
+        %     self.base = tr;
+        %     self.gripperLeft.base = tr * transl(0.01,0,0);
+        %     self.gripperRight.base = tr * transl(0.01,0,0);
+        % end
+    end
 end
 
