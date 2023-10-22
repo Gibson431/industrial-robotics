@@ -17,7 +17,7 @@ classdef Ned < omronTM5
                 baseTr = tr;
             end
             self.model.base = baseTr;
-            self.model.animate([0 pi/2 0 0 0 0]);
+%             self.model.animate([0 pi/2 0 0 0 0]);
             self.substrate = RobotSubstrate(self.substrateCount);
 
             % self.stepNed();

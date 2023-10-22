@@ -228,8 +228,8 @@ classdef NedAndElleApp < matlab.apps.AppBase
             y_pos = origin.t(2);
             z_pos = origin.t(3);
             
-            surface = surf([-2.5,-2.5;+1.5,+1.5] ,[-3.5,+0.4;-3.5,+0.4] ,[z_pos-0.95,z_pos-0.95;...
-                z_pos-0.95,z_pos-0.95],'CData',imread('concrete.jpg'),'FaceColor','texturemap');
+            surface = surf([-2,-2;+2,+2] ,[-2,+2;-2,+2] ,[z_pos-0.9,z_pos-0.9;...
+                z_pos-0.9,z_pos-0.9],'CData',imread('concrete.jpg'),'FaceColor','texturemap');
             app.environment = [app.environment, surface];
 
 
@@ -237,33 +237,38 @@ classdef NedAndElleApp < matlab.apps.AppBase
             rotate(flats, [0,0,1], 90, [0,0,0]);
             app.environment = [app.environment, flats];
 
-            table = PlaceObject("table.ply",[x_pos-0.65,y_pos+0.85,z_pos-0.95]);
+            table = PlaceObject("table.ply",[x_pos,y_pos+0.5,z_pos-0.5]);
+            rotate(table, [0,0,1], 90, [0,0,0]);
+            app.environment = [app.environment, table];
+            
+            table = PlaceObject("table.ply",[x_pos,y_pos-0.5,z_pos-0.5]);
             rotate(table, [0,0,1], 90, [0,0,0]);
             app.environment = [app.environment, table];
 
-            app.environment = [app.environment, PlaceObject("table.ply",[x_pos+0.4,y_pos+0.4,z_pos-0.95])];
 
-            app.environment = [app.environment, PlaceObject("Security_Fence.ply",[x_pos-2,y_pos-2,z_pos-0.95])];
-            app.environment = [app.environment, PlaceObject("Security_Fence.ply",[x_pos,y_pos-2,z_pos-0.95])];
+%             app.environment = [app.environment, PlaceObject("table.ply",[x_pos+0.4,y_pos+0.4,z_pos-0.95])];
 
-            app.environment = [app.environment, PlaceObject("wall.ply",[x_pos-0.8,y_pos+0.4,z_pos])];
-            wall = PlaceObject("wall.ply",[x_pos-1.9,y_pos-1.5,z_pos]);
+            app.environment = [app.environment, PlaceObject("Security_Fence.ply",[x_pos-0.75,y_pos-1.75,z_pos-0.9])];
+            app.environment = [app.environment, PlaceObject("Security_Fence.ply",[x_pos+0.75,y_pos-1.75,z_pos-0.9])];
+
+            app.environment = [app.environment, PlaceObject("wall.ply",[x_pos,y_pos+2,z_pos+0.1])];
+            wall = PlaceObject("wall.ply",[x_pos,y_pos-2,z_pos+0.1]);
             rotate(wall, [0,0,1], 90, [0,0,0]);
             app.environment = [app.environment, wall];
 
-            security_cam = PlaceObject("SecurityCam.ply",[x_pos+1.2,y_pos-0.4,z_pos+0.8]);
+            security_cam = PlaceObject("SecurityCam.ply",[x_pos+1.2,y_pos-2,z_pos+0.8]);
             rotate(security_cam, [0,0,1], 180, [0,0,0]);
             app.environment = [app.environment, security_cam];
 
-            e_stop = PlaceObject("e-stop.ply",[x_pos-2,y_pos+0.3,z_pos-0.4]);
+            e_stop = PlaceObject("e-stop.ply",[x_pos-1.5,y_pos+0.4,z_pos-2]);
             rotate(e_stop, [1,0,0], 90, [0,0,0]);
             app.environment = [app.environment, e_stop];
 
-            person = PlaceObject("person.ply",[x_pos-0.3,y_pos+1.6,z_pos-0.95]);
+            person = PlaceObject("person.ply",[x_pos-0.3,y_pos+1.6,z_pos-0.9]);
             rotate(person, [0,0,1], 135, [0,0,0]);
             app.environment = [app.environment, person];
 
-            app.environment = [app.environment, PlaceObject("FireExtinguisher.ply",[x_pos+0.9,y_pos-1.5,z_pos-0.95])];
+            app.environment = [app.environment, PlaceObject("FireExtinguisher.ply",[x_pos+0.9,y_pos-1.5,z_pos-0.9])];
 
         end
     end

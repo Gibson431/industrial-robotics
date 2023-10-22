@@ -131,16 +131,16 @@ classdef Elle < UR3
                 by_pos = bTr.t(2);
                 bz_pos = bTr.t(3);
 
-                waypoint1 = transl(bx_pos + 0.1,by_pos, bz_pos) * troty(-pi/2) * trotz(-pi);
+                waypoint1 = transl(bx_pos + 0.2,by_pos, bz_pos) * troty(-pi/2) * trotz(-pi);
                 waypoint2 = transl(bx_pos+0.02,by_pos,bz_pos) * troty(-pi/2) * trotz(-pi);
 
 
                 currentJointState = self.model.getpos;
 
-                nextJointState = self.model.ikcon(waypoint1, guess);
+                nextJointState = self.model.ikcon(waypoint1, initialGuess);
                 self.moveElle(currentJointState, nextJointState);
 
-                nextJointState = self.model.ikcon(waypoint2, guess);
+                nextJointState = self.model.ikcon(waypoint2, Guess);
                 self.moveElle(self.stepList(end,:), nextJointState);
 
             else
