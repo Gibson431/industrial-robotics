@@ -15,15 +15,15 @@ classdef Gripper < handle
             % L(2) = Link('d',0,'a',0.05,'alpha',pi/2,'qlim',[-pi pi]);
             % L(3) = Link('d',0,'a',0.02,'alpha',pi,'qlim',[-pi pi]);
 
-            L(1) = Link('d',0,'a',0.05,'alpha',0,'qlim',[-pi pi],'offset',0);
-            L(2) = Link('d',0,'a',0.05,'alpha',0,'qlim',[-pi pi],'offset',0);
-            L(3) = Link('d',0,'a',0.05,'alpha',0,'qlim',[-pi pi],'offset',0);
+            L(1) = Link('d',0,'a',0.1,'alpha',0,'qlim',[-pi pi],'offset',0);
+            L(2) = Link('d',0,'a',0.05,'alpha',0,'qlim',[-pi pi],'offset',pi/4);
+            L(3) = Link('d',0,'a',0.05,'alpha',0,'qlim',[-pi pi],'offset',pi/8);
 
 
             self.gripperLeft = SerialLink(L,'name','gripperLeft');
             self.gripperLeft.base = self.base
 
-            R(1) = Link('d',0,'a',-0.05,'alpha',-pi,'qlim',[-pi pi],'offset',0);
+            R(1) = Link('d',0,'a',-0.1,'alpha',-pi,'qlim',[-pi pi],'offset',0);
             R(2) = Link('d',0,'a',-0.05,'alpha',0,'qlim',[-pi pi],'offset',pi/4);
             R(3) = Link('d',0,'a',-0.05,'alpha',0,'qlim',[-pi pi],'offset',pi/8);
 
@@ -37,7 +37,7 @@ classdef Gripper < handle
             %
             % self.netpot = RobotNetpots(self.netpotCount);
             % % self.doStep();
-            % % self.model.teach();
+            % self.gripperLeft.teach();
             %
             % q = zeros(1,self.gripperLeft.n);
             %
@@ -47,6 +47,7 @@ classdef Gripper < handle
             %
             % self.gripperLeft.base = gQ
             %
+            
             hold on;
             self.gripperLeft.plot([0,0,0], 'nowrist','notiles');
             self.gripperRight.plot([0,0,0], 'nowrist','notiles');
