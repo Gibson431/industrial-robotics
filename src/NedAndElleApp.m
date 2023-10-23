@@ -25,13 +25,14 @@ classdef NedAndElleApp < matlab.apps.AppBase
 
         NedRobot
         ElleRobot
+        environment;
+
     end
 
     properties (Access = private)
         onePanelWidth = 576;
         twoPanelWidth = 768;
         eStop = false;
-        environment;
     end
     methods (Access = private)
         function Slider1ValueChanged(app, event)
@@ -218,59 +219,7 @@ classdef NedAndElleApp < matlab.apps.AppBase
 
         end
 
-        function app = createEnvironment(app)
-            origin = SE3(transl(0,0,0));
-            hold on;
-            % app.NedRobot = Ned(origin.T * transl(0.5,-0.25,0));
-            app.ElleRobot = Elle(origin.T * transl(-0.25,0.35,0));
-
-            x_pos = origin.t(1);
-            y_pos = origin.t(2);
-            z_pos = origin.t(3);
-            
-            surface = surf([-2,-2;+2,+2] ,[-2,+2;-2,+2] ,[z_pos-0.9,z_pos-0.9;...
-                z_pos-0.9,z_pos-0.9],'CData',imread('concrete.jpg'),'FaceColor','texturemap');
-            app.environment = [app.environment, surface];
-
-
-            flats = PlaceObject("2_Flats.ply",[x_pos+0.35,y_pos,z_pos]);
-            rotate(flats, [0,0,1], 90, [0,0,0]);
-            app.environment = [app.environment, flats];
-
-            table = PlaceObject("table.ply",[x_pos,y_pos+0.5,z_pos-0.95]);
-            rotate(table, [0,0,1], 90, [0,0,0]);
-            app.environment = [app.environment, table];
-            
-            table = PlaceObject("table.ply",[x_pos+1.05,y_pos+0.75,z_pos-0.95]);
-            % rotate(table, [0,0,1], 90, [0,0,0]);
-            app.environment = [app.environment, table];
-
-
-%             app.environment = [app.environment, PlaceObject("table.ply",[x_pos+0.4,y_pos+0.4,z_pos-0.95])];
-
-            app.environment = [app.environment, PlaceObject("Security_Fence.ply",[x_pos-0.75,y_pos-1.75,z_pos-0.9])];
-            app.environment = [app.environment, PlaceObject("Security_Fence.ply",[x_pos+0.75,y_pos-1.75,z_pos-0.9])];
-
-            app.environment = [app.environment, PlaceObject("wall.ply",[x_pos,y_pos+2,z_pos+0.1])];
-            wall = PlaceObject("wall.ply",[x_pos,y_pos-2,z_pos+0.1]);
-            rotate(wall, [0,0,1], 90, [0,0,0]);
-            app.environment = [app.environment, wall];
-
-            security_cam = PlaceObject("SecurityCam.ply",[x_pos+1.2,y_pos-2,z_pos+0.8]);
-            rotate(security_cam, [0,0,1], 180, [0,0,0]);
-            app.environment = [app.environment, security_cam];
-
-            e_stop = PlaceObject("e-stop.ply",[x_pos-1.5,y_pos+0.4,z_pos-2]);
-            rotate(e_stop, [1,0,0], 90, [0,0,0]);
-            app.environment = [app.environment, e_stop];
-
-            person = PlaceObject("person.ply",[x_pos-0.3,y_pos+1.6,z_pos-0.9]);
-            rotate(person, [0,0,1], 135, [0,0,0]);
-            app.environment = [app.environment, person];
-
-            app.environment = [app.environment, PlaceObject("FireExtinguisher.ply",[x_pos+0.9,y_pos-1.5,z_pos-0.9])];
-
-        end
+        
     end
 
     % App creation and deletion
@@ -286,8 +235,8 @@ classdef NedAndElleApp < matlab.apps.AppBase
 
 
             % Create Environment
-            % pause(5);
-            app.createEnvironment();
+            origin = SE3(transl(0,0,0));
+            CreateAppEnvironment(app, origin);
 
             app.processLoop();
             
@@ -307,8 +256,8 @@ classdef NedAndElleApp < matlab.apps.AppBase
             while (true)
                 disp(app.environment);
                 if (app.EStopSwitch.Value == "Off")
-                    % app.NedRobot.doStep();
-                    app.ElleRobot.doStep();
+                    app.NedRobot.doStep();
+                    % app.ElleRobot.doStep();
                 else
                     pause(0.1);
                 end
