@@ -222,7 +222,7 @@ classdef NedAndElleApp < matlab.apps.AppBase
             origin = SE3(transl(0,0,0));
             hold on;
             % app.NedRobot = Ned(origin.T * transl(0.5,-0.25,0));
-            app.ElleRobot = Elle(origin.T * transl(-0.25,0.25,0));
+            app.ElleRobot = Elle(origin.T * transl(-0.25,0.35,0));
 
             x_pos = origin.t(1);
             y_pos = origin.t(2);
@@ -233,7 +233,7 @@ classdef NedAndElleApp < matlab.apps.AppBase
             app.environment = [app.environment, surface];
 
 
-            flats = PlaceObject("2_Flats.ply",[x_pos+0.4,y_pos,z_pos]);
+            flats = PlaceObject("2_Flats.ply",[x_pos+0.35,y_pos,z_pos]);
             rotate(flats, [0,0,1], 90, [0,0,0]);
             app.environment = [app.environment, flats];
 

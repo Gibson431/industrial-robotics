@@ -34,7 +34,7 @@ classdef RobotNetpots < handle
                 self.netpotModel{i} = self.GetBrickModel(['Netpot',num2str(i)]);
 
                 if i < 5
-                    self.netpotModel{i}.base = SE3(transl(-0.4, 0.1, 0.06-(i-1)*0.02)) * SE3(trotx(pi/2));
+                    self.netpotModel{i}.base = SE3(transl(-0.4, 0.15, 0.06-(i-1)*0.02)) * SE3(trotx(pi/2));
                     % self.netpotModel{i}.base = SE3(transl(-0.3, -0.2, (i-1)*0.02)) * SE3(trotx(pi/2));
                 end
 
@@ -42,7 +42,7 @@ classdef RobotNetpots < handle
                 % transl(-0.3,-0.3+i*0.1,0.06) horizontally stacking
 
                 if  5 <= i
-                    self.netpotModel{i}.base = SE3(transl(-0.4, 0.2, 0.06-(i-5)*0.02)) * SE3(trotx(pi/2));
+                    self.netpotModel{i}.base = SE3(transl(-0.4, 0.25, 0.06-(i-5)*0.02)) * SE3(trotx(pi/2));
                     % self.netpotModel{i}.base = SE3(transl(-0.3, -0.1, (i-5)*0.02)) * SE3(trotx(pi/2));
                 end
 
@@ -50,7 +50,7 @@ classdef RobotNetpots < handle
                 % transl(-0.3,-0.3+(i-4)*0.1,0.04) horizontally stacking
 
                 if 8 < i
-                    self.netpotModel{i}.base = SE3(transl(-0.4, 0.3, 0.06-(i-9)*0.02)) * SE3(trotx(pi/2));
+                    self.netpotModel{i}.base = SE3(transl(-0.4, 0.35, 0.06-(i-9)*0.02)) * SE3(trotx(pi/2));
                     % self.netpotModel{i}.base = SE3(transl(-0.3, 0, (i-9)*0.02)) * SE3(trotx(pi/2));
                 end
 
@@ -58,7 +58,7 @@ classdef RobotNetpots < handle
                 % transl(-0.3,-0.3+(i-8)*0.1,0.02) horizontally stacking
 
                 if 12 < i
-                    self.netpotModel{i}.base = SE3(transl(-0.4, 0.4, 0.06-(i-13)*0.02)) * SE3(trotx(pi/2));
+                    self.netpotModel{i}.base = SE3(transl(-0.4, 0.45, 0.06-(i-13)*0.02)) * SE3(trotx(pi/2));
                     % self.netpotModel{i}.base = SE3(transl(-0.3, 0.1, (i-13)*0.02)) * SE3(trotx(pi/2));
                 end
                 % transl(-0.3, 0.1, 0+(i-12)*0.02) vertically stacking
@@ -66,7 +66,7 @@ classdef RobotNetpots < handle
 
                 % Plot 3D model
                 color = {'white'};
-                plot3d(self.netpotModel{i},0,'workspace',self.workspaceDimensions,'view',[-30,30],'delay',0,'noarrow','nowrist','color',color);
+                plot3d(self.netpotModel{i},0,'workspace',self.workspaceDimensions,'view',[-30,30],'delay',0,'noarrow','nowrist','color',color,'notiles');
 
                 % Hold on after the first plot (if already on there's no difference)
                 if i == 1
