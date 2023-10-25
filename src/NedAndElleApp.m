@@ -7,6 +7,9 @@ classdef NedAndElleApp < matlab.apps.AppBase
         LeftPanel  matlab.ui.container.Panel
         LeftGrid matlab.ui.container.GridLayout
         Button matlab.ui.control.Button
+        LeftButtonGroup CustomXYZControl
+            
+        LeftSliderGroup
         LeftSlider1 CustomSlider
         LeftSlider2 CustomSlider
         LeftSlider3 CustomSlider
@@ -35,6 +38,12 @@ classdef NedAndElleApp < matlab.apps.AppBase
         eStop = false;
     end
     methods (Access = private)
+        function LeftButtonPressed(app, event)
+            disp(event.Source.Text);
+
+            % value = event.Value;
+            % disp(value);
+        end
         function Slider1ValueChanged(app, event)
             value = event.Value;
             disp(value);
@@ -82,7 +91,7 @@ classdef NedAndElleApp < matlab.apps.AppBase
 
                 % Change to a 1x3 grid
                 app.GridLayout.RowHeight = {'1x'};
-                app.GridLayout.ColumnWidth = {'1x','2x','1x'};
+                app.GridLayout.ColumnWidth = {'1x','1x','1x'};
                 app.LeftPanel.Layout.Row = 1;
                 app.LeftPanel.Layout.Column = 1;
                 app.CentrePanel.Layout.Row = 1;
@@ -102,13 +111,13 @@ classdef NedAndElleApp < matlab.apps.AppBase
             % Create UIFigure and hide until all components are created
             app.UIFigure = uifigure('Visible','off');
             app.UIFigure.AutoResizeChildren = 'off';
-            app.UIFigure.Position = [100 100 860 480];
+            app.UIFigure.Position = [100 100 1200 480];
             app.UIFigure.Name = 'Ned and Elle App';
             app.UIFigure.SizeChangedFcn = createCallbackFcn(app, @updateAppLayout, true);
 
             % Create grid layout
             app.GridLayout = uigridlayout(app.UIFigure);
-            app.GridLayout.ColumnWidth = {220, '1x', 220};
+            app.GridLayout.ColumnWidth = {'1x', '1x', '1x'};
             app.GridLayout.RowHeight = {'2x'};
             app.GridLayout.ColumnSpacing = 0;
             app.GridLayout.RowSpacing = 0;
@@ -122,25 +131,37 @@ classdef NedAndElleApp < matlab.apps.AppBase
 
             % Create LeftGrid
             app.LeftGrid = uigridlayout(app.LeftPanel);
-            app.LeftGrid.ColumnWidth = {'1x', '2x'};
-            app.LeftGrid.RowHeight = {'1x','1x','1x','3x'};
+            app.LeftGrid.ColumnWidth = {'1x','2x'};
+            app.LeftGrid.RowHeight = {'2x','1x','1x'};
             app.LeftGrid.ColumnSpacing = 2.5;
             app.LeftGrid.Padding = [10 10 10 10];
 
             % Create CustomSlider1
-            app.LeftSlider1 = CustomSlider(app.LeftGrid);
-            app.LeftSlider1.Label.Text = 'Slider';
-            app.LeftSlider1.Slider.ValueChangedFcn = createCallbackFcn(app, @Slider1ValueChanged, true);
+            % app.LeftSlider1 = CustomSlider(app.LeftGrid);
+            % app.LeftSlider1.Label.Text = 'Slider';
+            % app.LeftSlider1.Slider.ValueChangedFcn = createCallbackFcn(app, @Slider1ValueChanged, true);
+            app.LeftButtonGroup = CustomXYZControl(app.LeftGrid, app);
+            app.LeftButtonGroup.GridLayout.Layout.Column = [1, 2];
+            app.LeftButtonGroup.GridLayout.Layout.Row = 1;
+            app.LeftButtonGroup.PX.ButtonPushedFcn = createCallbackFcn(app, @LeftButtonPressed, true);
+            app.LeftButtonGroup.NX.ButtonPushedFcn = createCallbackFcn(app, @LeftButtonPressed, true);
+            app.LeftButtonGroup.PY.ButtonPushedFcn = createCallbackFcn(app, @LeftButtonPressed, true);
+            app.LeftButtonGroup.NY.ButtonPushedFcn = createCallbackFcn(app, @LeftButtonPressed, true);
+            app.LeftButtonGroup.PZ.ButtonPushedFcn = createCallbackFcn(app, @LeftButtonPressed, true);
+            app.LeftButtonGroup.NZ.ButtonPushedFcn = createCallbackFcn(app, @LeftButtonPressed, true);
+
+
+            % app.TestButton.CreateCallbackFcn(app, @LeftButtonPressed, true);
 
             % Create CustomSlider2
-            app.LeftSlider2 = CustomSlider(app.LeftGrid);
-            app.LeftSlider2.Label.Text = 'Slider';
-            app.LeftSlider2.Slider.ValueChangedFcn = createCallbackFcn(app, @Slider2ValueChanged, true);
-
+            % app.LeftSlider2 = CustomSlider(app.LeftGrid);
+            % app.LeftSlider2.Label.Text = 'Slider';
+            % app.LeftSlider2.Slider.ValueChangedFcn = createCallbackFcn(app, @Slider2ValueChanged, true);
+            %
             % Create CustomSlider3
-            app.LeftSlider3 = CustomSlider(app.LeftGrid);
-            app.LeftSlider3.Label.Text = 'Slider';
-            app.LeftSlider3.Slider.ValueChangedFcn = createCallbackFcn(app, @Slider3ValueChanged, true);
+            % app.LeftSlider3 = CustomSlider(app.LeftGrid);
+            % app.LeftSlider3.Label.Text = 'Slider';
+            % app.LeftSlider3.Slider.ValueChangedFcn = createCallbackFcn(app, @Slider3ValueChanged, true);
 
             % Create Button
             % app.Button = uibutton(app.LeftGrid, 'push');
@@ -219,7 +240,7 @@ classdef NedAndElleApp < matlab.apps.AppBase
 
         end
 
-        
+
     end
 
     % App creation and deletion
@@ -239,7 +260,7 @@ classdef NedAndElleApp < matlab.apps.AppBase
             CreateAppEnvironment(app, origin);
 
             app.processLoop();
-            
+
             if nargout == 0
                 clear app
             end
