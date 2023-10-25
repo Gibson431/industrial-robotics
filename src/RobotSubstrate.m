@@ -34,13 +34,18 @@ classdef RobotSubstrate < handle
                 self.substrateModel{i} = self.GetBrickModel(['Substrate',num2str(i)]);
 
                 if i < 9
-                    self.substrateModel{i}.base = SE3(transl(0.55,-0.3+i*0.05,0.04)) * SE3(trotx(pi/2)) ;
+                    self.substrateModel{i}.base = SE3(transl(0+i*0.05, 0.25,0.04)) * SE3(trotx(pi/2)) ;
                 end
 
+                        %(-0.2+i*0.05, 0.25,0.04)
+                        %(0.55,-0.3+i*0.05,0.04)
+                        
                 if  9 <= i
-                    self.substrateModel{i}.base = SE3(transl(0.6,-0.3+(i-8)*0.05,0.04)) * SE3(trotx(pi/2)) ;
+                    self.substrateModel{i}.base = SE3(transl(0+(i-8)*0.05,0.2,0.04)) * SE3(trotx(pi/2)) ;
 
                 end
+                        %(-0.2+(i-8)*0.05,0.2,0.04)
+                        %(0.6,-0.3+(i-8)*0.05,0.04)
 
                 % Plot 3D model
                 plot3d(self.substrateModel{i},0,'workspace',self.workspaceDimensions,'view',[-30,30],'delay',0,'noarrow','nowrist','notiles');

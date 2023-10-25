@@ -16,14 +16,14 @@ classdef Ned < omronTM5
             if nargin == 1
                 baseTr = tr;
             end
-            self.model.base = baseTr;
+            self.model.base = baseTr * transl(0.75,0.5,0);
 %             self.model.animate([0 pi/2 0 0 0 0]);
             self.substrate = RobotSubstrate(self.substrateCount);
 
             % self.stepNed();
 
-            %             self.substrate = RobotSubstrate(self.substrateCount);
-            %             self.model.teach();
+                        self.substrate = RobotSubstrate(self.substrateCount);
+                        self.model.teach();
 
         end
         %% Move Robot
@@ -68,12 +68,38 @@ classdef Ned < omronTM5
             % steps = length(self.substrate.substrateModel);
 
             %initial guesses
-            initialGuess = [
-                0.3770      1.0053   -2.0019   -0.5027    1.5080    1.7907
-                0.1885      1.0053   -2.0019   -0.5027    1.5080    1.7907
-                0           0.9739   -1.9478   -0.5655    1.5080    1.7907
-                -0.1885     0.9425   -1.8937   -0.5027    1.5708    1.7907
+            %elle substrate guesses are grouped into sets of 4 substrates
+            %based on start pos and each line in the array is indicative of
+            % a waypoint in the movement
+            
+            group1Guess = [
+                 -2.2619    1.2566   -2.2724   -0.5027    1.6336         0
+%                 0.1885      1.0053   -2.0019   -0.5027    1.5080    1.7907
+%                 0           0.9739   -1.9478   -0.5655    1.5080    1.7907
+%                 -0.1885     0.9425   -1.8937   -0.5027    1.5708    1.7907
                 ];
+            group2Guess = [
+                
+                  -2.4504    0.9425   -1.8396   -0.6283    1.5708         0
+%                 0.1885      1.0053   -2.0019   -0.5027    1.5080    1.7907
+%                 0           0.9739   -1.9478   -0.5655    1.5080    1.7907
+%                 -0.1885     0.9425   -1.8937   -0.5027    1.5708    1.7907
+                ];
+            
+            group3Guess = [
+                -2.5447    0.7854   -1.4608   -0.8796    1.5708         0
+%                 0.1885      1.0053   -2.0019   -0.5027    1.5080    1.7907
+%                 0           0.9739   -1.9478   -0.5655    1.5080    1.7907
+%                 -0.1885     0.9425   -1.8937   -0.5027    1.5708    1.7907
+                ];
+            
+            group4Guess = [
+                -2.6389    0.7854   -1.5149   -0.8168    1.6336    2.6389
+%                 0.1885      1.0053   -2.0019   -0.5027    1.5080    1.7907
+%                 0           0.9739   -1.9478   -0.5655    1.5080    1.7907
+%                 -0.1885     0.9425   -1.8937   -0.5027    1.5708    1.7907
+                ];
+
 
             if mod(self.routeCount, 2) == 0
                 i = self.routeCount;
