@@ -33,9 +33,9 @@ classdef Ned < omronTM5
         
         %note to self on end positions:
         %
-        % (1) (1.38,0.1,0)(1.38,0.28,0)(1.38,0.46,0)(1.38,0.64,0)
+        % (1) (1.39,0.1,0)(1.38,0.28,0)(1.38,0.46,0)(1.38,0.64,0)
         % (2) (1.46,0.19,0)(1.46,0.37,0)(1.46,0.55,0)(1.46,0.73,0)
-        % (3) (1.52,0.1,0)(1.52,0.28,0)(1.52,0.46,0)(1.52,0.64,0)
+        % (3) (1.53,0.1,0)(1.52,0.28,0)(1.52,0.46,0)(1.52,0.64,0)
         % (4) (1.6,0.19,0)(1.6,0.37,0)(1.6,0.55,0)(1,6,0.73,0)
         
         function self = doStep(self)
@@ -146,7 +146,7 @@ classdef Ned < omronTM5
                 guess = 0;
                 if i <= 4
                     waypoint3 = transl(-0.2,-0.2,0.9) * trotx(-pi);
-                    waypoint4 = transl(-0.05,0.3-i*0.1,0.2) * trotx(-pi);
+                    waypoint4 = transl(1.39,0.1+(i-1)*18,0.2) * trotx(-pi);
 
                     guess = initialGuess(1,:);
 
@@ -156,7 +156,7 @@ classdef Ned < omronTM5
 
                 if 4 < i
                     waypoint3 = transl(-0.2,-0.2,0.9) * trotx(-pi);
-                    waypoint4 = transl(-0.025,0.3-(i-4)*0.05,0.2) * trotx(-pi);
+                    waypoint4 = transl(1.46,0.19+(i-5)*18,0.2) * trotx(-pi);
 
                     guess = initialGuess(1,:);
 
@@ -167,7 +167,7 @@ classdef Ned < omronTM5
 
                 if 8 < i
                     waypoint3 = transl(-0.2,-0.2,0.9) * trotx(-pi);
-                    waypoint4 = transl(0.025,0.3-(i-8)*0.05,0.2) * trotx(-pi);
+                    waypoint4 = transl(1.53,0.1+(i-9)*18,0.2) * trotx(-pi);
 
                     guess = initialGuess(3,:);
                     % waypoint = {waypoint1,waypoint2,waypoint3,waypoint4};
@@ -177,7 +177,7 @@ classdef Ned < omronTM5
 
                 if 12 < i
                     waypoint3 = transl(-0.2,-0.2,0.9) * trotx(-pi);
-                    waypoint4 = transl(0.05,0.3-(i-12)*0.05,0.2) * trotx(-pi);
+                    waypoint4 = transl(1.6,0.1+(i-13)*18,0.2) * trotx(-pi);
 
                     guess = initialGuess(4,:);
 
