@@ -21,12 +21,23 @@ classdef Ned < omronTM5
             self.substrate = RobotSubstrate(self.substrateCount);
 
 %             self.stepNed();
+%             flats = PlaceObject("2_Flats.ply",[0.35,-1.5,0]);
+%             rotate(flats, [0,0,1], 90, [0,0,0]);
+%             app.environment = [app.environment, flats];
 
-%                         self.substrate = RobotSubstrate(self.substrateCount);
-%                         self.model.teach();
+                        self.substrate = RobotSubstrate(self.substrateCount);
+                        self.model.teach();
 
         end
         %% Move Robot
+        
+        %note to self on end positions:
+        %
+        % (1) (1.38,0.1,0)(1.38,0.28,0)(1.38,0.46,0)(1.38,0.64,0)
+        % (2) (1.46,0.19,0)(1.46,0.37,0)(1.46,0.55,0)(1.46,0.73,0)
+        % (3) (1.52,0.1,0)(1.52,0.28,0)(1.52,0.46,0)(1.52,0.64,0)
+        % (4) (1.6,0.19,0)(1.6,0.37,0)(1.6,0.55,0)(1,6,0.73,0)
+        
         function self = doStep(self)
             if (length(self.stepList) ~= 0)
                 self.model.animate(self.stepList(1,:));
