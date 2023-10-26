@@ -17,22 +17,24 @@ classdef Ned < omronTM5
                 baseTr = tr;
             end
             self.model.base = baseTr * transl(0.75,0.5,0);
-%             self.model.animate([0 pi/2 0 0 0 0]);
+            self.model.animate([0 pi/2 0 0 0 0]);
             self.substrate = RobotSubstrate(self.substrateCount);
 
 %             self.stepNed();
-%             flats = PlaceObject("2_Flats.ply",[0.35,-1.5,0]);
-%             rotate(flats, [0,0,1], 90, [0,0,0]);
+            
+            flats = PlaceObject("2_Flats.ply",[0.35,-1.5,0]);
+            rotate(flats, [0,0,1], 90, [0,0,0]);
 %             app.environment = [app.environment, flats];
 
                         self.substrate = RobotSubstrate(self.substrateCount);
-                        self.model.teach();
+%                         self.model.teach();
 
         end
         %% Move Robot
         
         %note to self on end positions:
-        %
+        %offset z axis joing guess:     0.2827    0.7226   -0.6493   -1.7593    1.3823   -0.4712
+
         % (1) (1.39,0.1,0)(1.38,0.28,0)(1.38,0.46,0)(1.38,0.64,0)
         % (2) (1.46,0.19,0)(1.46,0.37,0)(1.46,0.55,0)(1.46,0.73,0)
         % (3) (1.53,0.1,0)(1.52,0.28,0)(1.52,0.46,0)(1.52,0.64,0)
@@ -144,8 +146,8 @@ classdef Ned < omronTM5
             else
                 i = floor(self.routeCount/2)+1;
                 guess = 0;
-                if i <= 4
-                    waypoint3 = transl(-0.2,-0.2,0.9) * trotx(-pi);
+                if i <= 4                    
+                    waypoint3 = waypoint4(transl(0,0,0.5) * trotx(-pi));
                     waypoint4 = transl(1.39,0.1+(i-1)*18,0.2) * trotx(-pi);
 
                     guess = initialGuess(1,:);
