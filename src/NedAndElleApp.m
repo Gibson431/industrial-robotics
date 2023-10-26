@@ -46,12 +46,28 @@ classdef NedAndElleApp < matlab.apps.AppBase
         end
 
         function LeftSlidersMoved(app, event)
-            disp(app.LeftSliderGroup.Link0.Value);
-            % disp(app.LeftSliderGroup.Link2Label.Text);
-            % disp(event.Source);
+            L0 = app.LeftSliderGroup.Link0.Value;
+            L1 = app.LeftSliderGroup.Link1.Value;
+            L2 = app.LeftSliderGroup.Link2.Value;
+            L3 = app.LeftSliderGroup.Link3.Value;
+            L4 = app.LeftSliderGroup.Link4.Value;
+            L5 = app.LeftSliderGroup.Link5.Value;
+            app.LeftSliderGroup.Link0
+            qVals = [L0 L1 L2 L3 L4 L5];
+            disp(qVals);
+            app.NedRobot.jog(qVals);
         end
 
         function RightSlidersMoved(app, event)
+            L0 = app.RightSliderGroup.Link0.Value;
+            L1 = app.RightSliderGroup.Link1.Value;
+            L2 = app.RightSliderGroup.Link2.Value;
+            L3 = app.RightSliderGroup.Link3.Value;
+            L4 = app.RightSliderGroup.Link4.Value;
+            L5 = app.RightSliderGroup.Link5.Value;
+            qVals = [L0 L1 L2 L3 L4 L5];
+            disp(qVals);
+            app.ElleRobot.jog(qVals);
             disp(event.Source);
         end
 
@@ -181,8 +197,8 @@ classdef NedAndElleApp < matlab.apps.AppBase
             app.EStopSwitch.Layout.Column = 1;
             app.EStopSwitch.ValueChangedFcn = createCallbackFcn(app, @EStopValueChanged, true);
 
-            
-            
+
+
             % Create RightPanel
             app.RightPanel = uipanel(app.GridLayout);
             app.RightPanel.Layout.Row = 1;
