@@ -1,7 +1,7 @@
 function app = CreateAppEnvironment(app, origin)
 hold on;
 app.NedRobot = Ned(origin.T); %* transl(0.75,0.5,0));
-% app.ElleRobot = Elle(origin.T); % * transl(1.75,-0.25,0));
+app.ElleRobot = Elle(origin.T); % * transl(1.75,-0.25,0));
 
 x_pos = origin.t(1);
 y_pos = origin.t(2);

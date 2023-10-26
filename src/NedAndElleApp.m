@@ -257,7 +257,7 @@ classdef NedAndElleApp < matlab.apps.AppBase
 
             % Create Environment
             origin = SE3(transl(0,0,0));
-            CreateAppEnvironment(app, origin);
+            app = CreateAppEnvironment(app, origin);
 
             app.processLoop();
 
@@ -274,6 +274,8 @@ classdef NedAndElleApp < matlab.apps.AppBase
         end
 
         function app = processLoop(app)
+            pause(3);
+            disp(app.NedRobot.model.name);
             while (true)
                 disp(app.environment);
                 if (app.EStopSwitch.Value == "Off")

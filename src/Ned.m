@@ -1,5 +1,6 @@
-classdef Ned < omronTM5
+classdef Ned
     properties
+        robot;
         substrate;
         substrateCount = 16;
         substrateIndex = 0;
@@ -16,28 +17,30 @@ classdef Ned < omronTM5
             if nargin == 1
                 baseTr = tr;
             end
-            self.model.base = baseTr * transl(0.9,0.5,0);
-%             self.model.animate([0 pi/2 0 0 0 0]);
+            self.robot = omronTM5(baseTr);
+            self.robot.model.base = baseTr * transl(0.9,0.5,0);
+            %             self.robot.model.animate([0 pi/2 0 0 0 0]);
             self.substrate = RobotSubstrate(self.substrateCount);
 
-%             self.stepNed();
-            
-            flats = PlaceObject("2_Flats.ply",[1.5,0.3,0]);
-%             rotate(flats, [0,0,1], 90, [0,0,0]);
-%             app.environment = [app.environment, flats];
+            %             self.stepNed();
 
-                        self.substrate = RobotSubstrate(self.substrateCount);
-%                         self.model.teach();
+            flats = PlaceObject("2_Flats.ply",[1.5,0.3,0]);
+            %             rotate(flats, [0,0,1], 90, [0,0,0]);
+            %             app.environment = [app.environment, flats];
+
+            self.substrate = RobotSubstrate(self.substrateCount);
+            %                         self.robot.model.teach();
+            self.robot.model.animate([0 0 0 0 0 0]);
 
         end
         %% Move Robot
-        
-        
+
+
         function self = doStep(self)
             if (length(self.stepList) ~= 0)
-                self.model.animate(self.stepList(1,:));
+                self.robot.model.animate(self.stepList(1,:));
                 if (self.holdingObject)
-                    self.heldObject.base = self.model.fkine(self.stepList(1,:)) * SE3(trotx(-pi/2));
+                    self.heldObject.base = self.robot.model.fkine(self.stepList(1,:)) * SE3(trotx(-pi/2));
                     self.heldObject.animate(0);
                 end
 
@@ -62,9 +65,9 @@ classdef Ned < omronTM5
         end
 
         function self = jog(self, qVals)
-            self.model.animate(qVals);
+            self.robot.model.animate(qVals);
             if (self.holdingObject)
-                self.heldObject.base = self.model.fkine(qVals) * SE3(trotx(-pi/2));
+                self.heldObject.base = self.robot.model.fkine(qVals) * SE3(trotx(-pi/2));
                 self.heldObject.animate(0);
             end
         end
@@ -72,42 +75,42 @@ classdef Ned < omronTM5
         function self = calcNextRoute(self)
             disp('recalc');
             % steps = length(self.substrate.substrateModel);
-            
+
             initialGuess = [
-                 -2.2619    1.2566   -2.2724   -0.5027    1.6336         0
-                 -2.4504    0.9425   -1.8396   -0.6283    1.5708         0  %actual
-                 -2.5447    0.7854   -1.4608   -0.8796    1.5708         0 %actual
-                 -2.6389    0.7854   -1.5149   -0.8168    1.6336    2.6389
-                 ];
-             
-% 
-%             
-%             group1Guess = [
-%                  -2.2619    1.2566   -2.2724   -0.5027    1.6336         0
-%                  -2.2619    1.2566   -2.2724   -0.5027    1.6336         0 %actual
-% %                 0           0.9739   -1.9478   -0.5655    1.5080    1.7907
-% %                 -0.1885     0.9425   -1.8937   -0.5027    1.5708    1.7907
-%                 ];
-%             group2Guess = [
-%                   -2.4504    0.9425   -1.8396   -0.6283    1.5708         0
-%                   -2.4504    0.9425   -1.8396   -0.6283    1.5708         0  %actual
-% %                 0           0.9739   -1.9478   -0.5655    1.5080    1.7907
-% %                 -0.1885     0.9425   -1.8937   -0.5027    1.5708    1.7907
-%                 ];
-%             
-%             group3Guess = [
-%                 -2.5447    0.7854   -1.4608   -0.8796    1.5708         0
-%                 -2.5447    0.7854   -1.4608   -0.8796    1.5708         0 %actual
-% %                 0           0.9739   -1.9478   -0.5655    1.5080    1.7907
-% %                 -0.1885     0.9425   -1.8937   -0.5027    1.5708    1.7907
-%                 ];
-%             
-%             group4Guess = [
-%                 -2.6389    0.7854   -1.5149   -0.8168    1.6336    2.6389
-%                 -2.6389    0.7854   -1.5149   -0.8168    1.6336    2.6389
-% %                 0           0.9739   -1.9478   -0.5655    1.5080    1.7907
-% %                 -0.1885     0.9425   -1.8937   -0.5027    1.5708    1.7907
-%                 ];
+                -2.2619    1.2566   -2.2724   -0.5027    1.6336         0
+                -2.4504    0.9425   -1.8396   -0.6283    1.5708         0  %actual
+                -2.5447    0.7854   -1.4608   -0.8796    1.5708         0 %actual
+                -2.6389    0.7854   -1.5149   -0.8168    1.6336    2.6389
+                ];
+
+            %
+            %
+            %             group1Guess = [
+            %                  -2.2619    1.2566   -2.2724   -0.5027    1.6336         0
+            %                  -2.2619    1.2566   -2.2724   -0.5027    1.6336         0 %actual
+            % %                 0           0.9739   -1.9478   -0.5655    1.5080    1.7907
+            % %                 -0.1885     0.9425   -1.8937   -0.5027    1.5708    1.7907
+            %                 ];
+            %             group2Guess = [
+            %                   -2.4504    0.9425   -1.8396   -0.6283    1.5708         0
+            %                   -2.4504    0.9425   -1.8396   -0.6283    1.5708         0  %actual
+            % %                 0           0.9739   -1.9478   -0.5655    1.5080    1.7907
+            % %                 -0.1885     0.9425   -1.8937   -0.5027    1.5708    1.7907
+            %                 ];
+            %
+            %             group3Guess = [
+            %                 -2.5447    0.7854   -1.4608   -0.8796    1.5708         0
+            %                 -2.5447    0.7854   -1.4608   -0.8796    1.5708         0 %actual
+            % %                 0           0.9739   -1.9478   -0.5655    1.5080    1.7907
+            % %                 -0.1885     0.9425   -1.8937   -0.5027    1.5708    1.7907
+            %                 ];
+            %
+            %             group4Guess = [
+            %                 -2.6389    0.7854   -1.5149   -0.8168    1.6336    2.6389
+            %                 -2.6389    0.7854   -1.5149   -0.8168    1.6336    2.6389
+            % %                 0           0.9739   -1.9478   -0.5655    1.5080    1.7907
+            % %                 -0.1885     0.9425   -1.8937   -0.5027    1.5708    1.7907
+            %                 ];
 
 
             if mod(self.routeCount, 2) == 0
@@ -123,18 +126,18 @@ classdef Ned < omronTM5
                 waypoint1 = transl(bx_pos,by_pos, bz_pos + 0.1) * trotx(-pi);
                 waypoint2 = transl(bx_pos,by_pos,bz_pos + 0.02) * trotx(-pi);
 
-                currentJointState = self.model.getpos;
+                currentJointState = self.robot.model.getpos;
 
-                nextJointState = self.model.ikcon(waypoint1, guess);
+                nextJointState = self.robot.model.ikcon(waypoint1, guess);
                 self.moveNed(currentJointState, nextJointState);
 
-                nextJointState = self.model.ikcon(waypoint2, guess);
+                nextJointState = self.robot.model.ikcon(waypoint2, guess);
                 self.moveNed(self.stepList(end,:), nextJointState);
 
             else
                 i = floor(self.routeCount/2)+1;
                 guess = 0;
-                if i <= 4                    
+                if i <= 4
                     waypoint3 = transl(0.21,1.75-(i-1)*14,0.5) * trotx(-pi);
                     waypoint4 = transl(0.21,1.75-(i-1)*14,0.2) * trotx(-pi);
 
@@ -176,15 +179,15 @@ classdef Ned < omronTM5
 
                 end
 
-                % nextJointState = self.model.ikcon(waypoint3,guess);
+                % nextJointState = self.robot.model.ikcon(waypoint3,guess);
                 % self.moveNedSubstrate(i, nextJointState);
 
-                currentJointState = self.model.getpos;
+                currentJointState = self.robot.model.getpos;
 
-                nextJointState = self.model.ikcon(waypoint3, guess);
+                nextJointState = self.robot.model.ikcon(waypoint3, guess);
                 self.moveNedSubstrate(i, currentJointState, nextJointState);
 
-                nextJointState = self.model.ikcon(waypoint4, guess);
+                nextJointState = self.robot.model.ikcon(waypoint4, guess);
                 self.moveNedSubstrate(i, self.stepList(end,:), nextJointState);
 
 
@@ -194,10 +197,10 @@ classdef Ned < omronTM5
 
             % for j = 1:wSteps
             %
-            %     nextJointState = self.model.ikcon(waypoint{j},guess);
-            %     % nextJointState = self.model.ikine(waypoint{j},'mask',[1 1 1 1 1 1]);
+            %     nextJointState = self.robot.model.ikcon(waypoint{j},guess);
+            %     % nextJointState = self.robot.model.ikine(waypoint{j},'mask',[1 1 1 1 1 1]);
             %     if j<=2
-            %         % nextJointState = self.model.ikine(waypoint{j},'mask',[1 1 1 0 0 0]);
+            %         % nextJointState = self.robot.model.ikine(waypoint{j},'mask',[1 1 1 0 0 0]);
             %         self.moveNed(nextJointState);
             %     end
             %
@@ -231,7 +234,7 @@ classdef Ned < omronTM5
             % for i = 1:steps
             %     % self.netpot.netpotModel{i}.base = self.robot.model.fkine(qMatrix(i,:)) * SE3(troty(pi/2));
             %
-            %     self.model.animate(qMatrix(i,:));
+            %     self.robot.model.animate(qMatrix(i,:));
             %     drawnow();
             %     pause(0.1);
             % end
@@ -241,7 +244,7 @@ classdef Ned < omronTM5
             self.moveNed(fromJointState, toJointState);
             self.holdingObject = true;
             self.heldObject = self.substrate.substrateModel{i};
-            % currentJointState = self.model.getpos;
+            % currentJointState = self.robot.model.getpos;
             % s = lspb(0,1,steps);
             % qMatrix = nan(steps,6);
             % for k = 1:steps
@@ -259,9 +262,9 @@ classdef Ned < omronTM5
             %  end
             % Animate gripper and brick with end-effector
             % for j = 1:steps
-            %     self.substrate.substrateModel{i}.base = self.model.fkine(qMatrix(j,:)) * SE3(trotx(-pi/2));
+            %     self.substrate.substrateModel{i}.base = self.robot.model.fkine(qMatrix(j,:)) * SE3(trotx(-pi/2));
             %
-            %     self.model.animate(qMatrix(j,:));
+            %     self.robot.model.animate(qMatrix(j,:));
             %     self.substrate.substrateModel{i}.animate(0);
             %
             %     drawnow();
