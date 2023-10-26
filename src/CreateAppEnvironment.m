@@ -1,7 +1,7 @@
 function app = CreateAppEnvironment(app, origin)
 hold on;
 app.NedRobot = Ned(origin.T); %* transl(0.75,0.5,0));
-app.ElleRobot = Elle(origin.T * transl(1.75,-0.25,0));
+% app.ElleRobot = Elle(origin.T); % * transl(1.75,-0.25,0));
 
 x_pos = origin.t(1);
 y_pos = origin.t(2);
@@ -12,8 +12,8 @@ surface = surf([-2,-2;+2,+2] ,[-3.25,+0.75;-3.25,+0.75] ,[z_pos-0.9,z_pos-0.9;..
 app.environment = [app.environment, surface];
 
 
-flats = PlaceObject("2_Flats.ply",[x_pos+0.35,y_pos-1.5,z_pos]);
-rotate(flats, [0,0,1], 90, [0,0,0]);
+flats = PlaceObject("2_Flats.ply",[x_pos+1.5,y_pos+0.3,z_pos]);
+% rotate(flats, [0,0,1], 90, [0,0,0]);
 app.environment = [app.environment, flats];
 
 table = PlaceObject("table.ply",[x_pos,y_pos+0.4,z_pos-0.95]);

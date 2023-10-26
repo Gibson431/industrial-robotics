@@ -16,14 +16,14 @@ classdef Ned < omronTM5
             if nargin == 1
                 baseTr = tr;
             end
-            self.model.base = baseTr * transl(0.75,0.5,0);
-            self.model.animate([0 pi/2 0 0 0 0]);
+            self.model.base = baseTr * transl(0.9,0.5,0);
+%             self.model.animate([0 pi/2 0 0 0 0]);
             self.substrate = RobotSubstrate(self.substrateCount);
 
 %             self.stepNed();
             
-            flats = PlaceObject("2_Flats.ply",[0.35,-1.5,0]);
-            rotate(flats, [0,0,1], 90, [0,0,0]);
+            flats = PlaceObject("2_Flats.ply",[1.5,0.3,0]);
+%             rotate(flats, [0,0,1], 90, [0,0,0]);
 %             app.environment = [app.environment, flats];
 
                         self.substrate = RobotSubstrate(self.substrateCount);
@@ -32,13 +32,6 @@ classdef Ned < omronTM5
         end
         %% Move Robot
         
-        %note to self on end positions:
-        %offset z axis joing guess:     0.2827    0.7226   -0.6493   -1.7593    1.3823   -0.4712
-
-        % (1) (1.39,0.1,0)(1.38,0.28,0)(1.38,0.46,0)(1.38,0.64,0)
-        % (2) (1.46,0.19,0)(1.46,0.37,0)(1.46,0.55,0)(1.46,0.73,0)
-        % (3) (1.53,0.1,0)(1.52,0.28,0)(1.52,0.46,0)(1.52,0.64,0)
-        % (4) (1.6,0.19,0)(1.6,0.37,0)(1.6,0.55,0)(1,6,0.73,0)
         
         function self = doStep(self)
             if (length(self.stepList) ~= 0)
@@ -79,11 +72,6 @@ classdef Ned < omronTM5
         function self = calcNextRoute(self)
             disp('recalc');
             % steps = length(self.substrate.substrateModel);
-
-            %initial guesses
-            %elle substrate guesses are grouped into sets of 4 substrates
-            %based on start pos and each line in the array is indicative of
-            % a waypoint in the movement
             
             initialGuess = [
                  -2.2619    1.2566   -2.2724   -0.5027    1.6336         0
@@ -147,8 +135,8 @@ classdef Ned < omronTM5
                 i = floor(self.routeCount/2)+1;
                 guess = 0;
                 if i <= 4                    
-                    waypoint3 = waypoint4(transl(0,0,0.5) * trotx(-pi));
-                    waypoint4 = transl(1.39,0.1+(i-1)*18,0.2) * trotx(-pi);
+                    waypoint3 = transl(0.21,1.75-(i-1)*14,0.5) * trotx(-pi);
+                    waypoint4 = transl(0.21,1.75-(i-1)*14,0.2) * trotx(-pi);
 
                     guess = initialGuess(1,:);
 
@@ -157,8 +145,8 @@ classdef Ned < omronTM5
                 end
 
                 if 4 < i
-                    waypoint3 = transl(-0.2,-0.2,0.9) * trotx(-pi);
-                    waypoint4 = transl(1.46,0.19+(i-5)*18,0.2) * trotx(-pi);
+                    waypoint4 = transl(0.28,1.82+(i-5)*14,0.5) * trotx(-pi);
+                    waypoint4 = transl(0.28,1.82+(i-5)*14,0.2) * trotx(-pi);
 
                     guess = initialGuess(1,:);
 
@@ -168,8 +156,8 @@ classdef Ned < omronTM5
                 end
 
                 if 8 < i
-                    waypoint3 = transl(-0.2,-0.2,0.9) * trotx(-pi);
-                    waypoint4 = transl(1.53,0.1+(i-9)*18,0.2) * trotx(-pi);
+                    waypoint3 = transl(0.35,1.75+(i-9)*14,0.5) * trotx(-pi);
+                    waypoint4 = transl(0.35,1.75+(i-9)*14,0.2) * trotx(-pi);
 
                     guess = initialGuess(3,:);
                     % waypoint = {waypoint1,waypoint2,waypoint3,waypoint4};
@@ -178,8 +166,8 @@ classdef Ned < omronTM5
                 end
 
                 if 12 < i
-                    waypoint3 = transl(-0.2,-0.2,0.9) * trotx(-pi);
-                    waypoint4 = transl(1.6,0.1+(i-13)*18,0.2) * trotx(-pi);
+                    waypoint3 = transl(0.42,1.82+(i-13)*14,0.5) * trotx(-pi);
+                    waypoint4 = transl(0.42,1.82+(i-13)*14,0.2) * trotx(-pi);
 
                     guess = initialGuess(4,:);
 
