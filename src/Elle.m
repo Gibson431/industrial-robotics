@@ -11,19 +11,18 @@ classdef Elle < UR3
     end
     methods
         function self = Elle(tr)
-            close all;
-            clc;
+          
             baseTr = eye(4);
             if nargin ~= 0
                 baseTr = tr;
             end
             % self.robot = UR3(baseTr);
             self.model.base = baseTr * transl(1.5,0,0);
-            self.model.animate([0 -pi/2 0 0 0 pi/2]);
+%             self.model.animate([0 -pi/2 0 0 0 pi/2]);
             
             self.netpot = RobotNetpots(self.netpotCount);
-            % self.doStep();
-            %             self.model.teach();
+%             self.doStep();
+            self.model.teach();
             
         end
         
@@ -33,6 +32,16 @@ classdef Elle < UR3
         % (2) (1.46,0.19,0)(1.46,0.37,0)(1.46,0.55,0)(1.46,0.73,0)
         % (3) (1.52,0.1,0)(1.52,0.28,0)(1.52,0.46,0)(1.52,0.64,0)
         % (4) (1.6,0.19,0)(1.6,0.37,0)(1.6,0.55,0)(1,6,0.73,0)
+        
+        % guess
+%            group1Guess = [
+%                1.8850   -0.8796    1.8850   -1.0053    1.8850         0
+%                1.8850   -0.8796    1.8850   -1.0053    1.8850         0
+%                
+               
+        %   group2Guess = [1.5080   -0.8796    2.1363   -1.2566    1.5080         0
+
+
         
         function self = doStep(self)
             if (length(self.stepList) ~= 0)
@@ -74,32 +83,6 @@ classdef Elle < UR3
             disp('recalc');
             % steps = length(self.substrate.substrateModel);
             
-            %initial guesses
-            % group1Guess = [
-            %     0.3770   -0.8796    2.2619   -1.3823    1.6336         0
-            %     0.3770   -0.8796    2.0106   -1.1310    1.8850    0.0000
-            %     0.3770   -0.8796    0.6283    0.1257    1.7593         0
-            %     0.3770   -0.8796    0.6283    0.1257    1.7593         0];
-            %
-            % group2Guess = [
-            %     0   -1.1310    .5133   -1.3823    1.6336         0
-            %     0   -1.1310    .5133   -1.3823    1.6336         0
-            %     0.3770   -0.8796    0.6283    0.1257    1.7593         0
-            %     0.3770   -0.8796    0.6283    0.1257    1.7593         0];
-            %
-            % group3Guess = [
-            %     3.7699   -2.0106   -2.5133   -1.7593   -1.0053         0
-            %     3.7699   -2.0106   -2.5133   -1.7593   -1.0053         0
-            %     0.3770   -0.8796    0.6283    0.1257    1.7593         0
-            %     0.3770   -0.8796    0.6283    0.1257    1.7593         0];
-            %
-            % group4Guess = [
-            %     3.2673   -2.0106   -2.3876   -2.0106   -1.3823         0
-            %     3.2673   -2.0106   -2.3876   -2.0106   -1.3823         0
-            %     0.3770   -0.8796    0.6283    0.1257    1.7593         0
-            %     0.3770   -0.8796    0.6283    0.1257    1.7593         0];
-            %
-            % initialGuess = {group1Guess,group2Guess,group3Guess,group4Guess};
             
             initialGuess = [
                 0.3770   -0.8796    2.2619   -1.3823    1.6336         0
@@ -108,25 +91,12 @@ classdef Elle < UR3
                 3.2673   -2.0106   -2.3876   -2.0106   -1.3823         0
                 ];
             
-            % waypoint1Guess = [
-            %     0.3770   -0.8796    2.2619   -1.3823    1.6336         0
-            %     0   -1.1310    .5133   -1.3823    1.6336         0
-            %     3.7699   -2.0106   -2.5133   -1.7593   -1.0053         0
-            %     3.2673   -2.0106   -2.3876   -2.0106   -1.3823         0
-            %     ];
             
-            % waypoint2Guess = [
-            %     0.3770   -0.8796    2.0106   -1.1310    1.8850    0.0000
-            %     0   -1.1310    .5133   -1.3823    1.6336         0
-            %     3.7699   -2.0106   -2.5133   -1.7593   -1.0053         0
-            %     3.2673   -2.0106   -2.3876   -2.0106   -1.3823         0
-            %     ];
-            
-            
-            waypoint3Guess =    [0.3770   -0.8796    0.6283    0.1257    1.7593         0];
-            waypoint4Guess =    [0.3770   -0.8796    0.6283    0.1257    1.7593         0];
-            
-            
+%             
+%             waypoint3Guess =    [0.3770   -0.8796    0.6283    0.1257    1.7593         0];
+%             waypoint4Guess =    [0.3770   -0.8796    0.6283    0.1257    1.7593         0];
+%             
+%             
             if mod(self.routeCount, 2) == 0
                 i = self.routeCount;
                 guess = floor(i/4)+1;
@@ -137,16 +107,16 @@ classdef Elle < UR3
                 by_pos = bTr.t(2);
                 bz_pos = bTr.t(3);
                 
-                waypoint1 = transl(bx_pos + 0.2,by_pos, bz_pos) * troty(-pi/2) * trotz(-pi);
-                waypoint2 = transl(bx_pos+0.02,by_pos,bz_pos) * troty(-pi/2) * trotz(-pi);
+                waypoint1 = transl(bx_pos,by_pos+0.2, bz_pos) * troty(-pi/2) * trotz(-pi);
+                waypoint2 = transl(bx_pos,by_pos+0.02,bz_pos) * troty(-pi/2) * trotz(-pi);
                 
                 
                 currentJointState = self.model.getpos;
                 
-                nextJointState = self.model.ikcon(waypoint1, initialGuess);
+                nextJointState = self.model.ikcon(waypoint1);
                 self.moveElle(currentJointState, nextJointState);
                 
-                nextJointState = self.model.ikcon(waypoint2, Guess);
+                nextJointState = self.model.ikcon(waypoint2);
                 self.moveElle(self.stepList(end,:), nextJointState);
                 
             else
@@ -204,10 +174,10 @@ classdef Elle < UR3
                 
                 currentJointState = self.model.getpos;
                 
-                nextJointState = self.model.ikcon(waypoint3, waypoint3Guess);
+                nextJointState = self.model.ikcon(waypoint3);
                 self.moveElleNetpot(i, currentJointState, nextJointState);
                 
-                nextJointState = self.model.ikcon(waypoint4, waypoint4Guess);
+                nextJointState = self.model.ikcon(waypoint4);
                 self.moveElleNetpot(i, self.stepList(end,:), nextJointState);
                 
             end
@@ -235,6 +205,7 @@ classdef Elle < UR3
         end
         
         function self =  moveElle(self,fromJointState, toJointState)
+            disp("move elle");
             currentJointState = fromJointState;
             steps = 20;
             % s = lspb(0,1,steps);
@@ -252,13 +223,13 @@ classdef Elle < UR3
             %  end
             qMatrix = jtraj(currentJointState,toJointState,steps);
             self.stepList = [self.stepList; qMatrix];
-            % for i = 1:steps
-            %     % self.netpot.netpotModel{i}.base = self.model.fkine(qMatrix(i,:)) * SE3(troty(pi/2));
-            %
-            %     self.model.animate(qMatrix(i,:));
-            %     drawnow();
-            %     pause(0.1);
-            % end
+            for i = 1:steps
+                % self.netpot.netpotModel{i}.base = self.model.fkine(qMatrix(i,:)) * SE3(troty(pi/2));
+            
+                self.model.animate(qMatrix(i,:));
+                drawnow();
+                pause(0.1);
+            end
         end
         
         function self =  moveElleNetpot(self,i,fromJointState,toJointState)
@@ -270,8 +241,8 @@ classdef Elle < UR3
             % for k = 1:steps
             %     qMatrix(k,:) = (1-s(k))*currentJointState + s(k)*nextJointState;
             % end
-            % qSteps = 20;
-            % qMatrix = jtraj(currentJointState, toJointState,qSteps);
+            qSteps = 20;
+            qMatrix = jtraj(fromJointState, toJointState,qSteps);
             % x = zeros(6,steps);
             %  for l = 1:steps-1
             %      xdot = (x(:,l+1) - x(:,l))/deltaT;
@@ -281,15 +252,15 @@ classdef Elle < UR3
             %      qMatrix(l+1,:) =  qMatrix(l,:) + deltaT*qdot';
             %  end
             % Animate gripper and brick with end-effector
-            % for j = 1:steps
-            %     self.netpot.netpotModel{i}.base = self.model.fkine(qMatrix(j,:)) * SE3(troty(pi/2)) *SE3(trotx(-pi/2));
-            %
-            %     self.model.animate(qMatrix(j,:));
-            %     self.netpot.netpotModel{i}.animate(0);
-            %
-            %     drawnow();
-            %     pause(0.1);
-            % end
+            for j = 1:qSteps
+                self.netpot.netpotModel{i}.base = self.model.fkine(qMatrix(j,:)) * SE3(troty(pi/2)) *SE3(trotx(-pi/2));
+            
+                self.model.animate(qMatrix(j,:));
+                self.netpot.netpotModel{i}.animate(0);
+            
+                drawnow();
+                pause(0.1);
+            end
         end
     end
 end
