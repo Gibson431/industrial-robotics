@@ -278,7 +278,7 @@ classdef NedAndElleApp < matlab.apps.AppBase
                 disp(app.environment);
                 if (app.EStopSwitch.Value == "Off")
                     app.NedRobot.doStep();
-                    % app.ElleRobot.doStep();
+                    app.ElleRobot.doStep();
                 else
                     pause(0.1);
                 end
