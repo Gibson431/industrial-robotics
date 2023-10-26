@@ -17,13 +17,19 @@ classdef Ned
             if nargin == 1
                 baseTr = tr;
             end
+<<<<<<< HEAD
             self.robot = omronTM5(baseTr);
             self.robot.model.base = baseTr * transl(0.9,0.5,0);
             %             self.robot.model.animate([0 pi/2 0 0 0 0]);
+=======
+            self.model.base = baseTr*transl(0.9,0.5,0);
+%             self.model.animate([0 pi/2 0 0 0 0]);
+>>>>>>> 41a347202f0f5b7f018cddc16a303bbbd05112f6
             self.substrate = RobotSubstrate(self.substrateCount);
 
             %             self.stepNed();
 
+<<<<<<< HEAD
             flats = PlaceObject("2_Flats.ply",[1.5,0.3,0]);
             %             rotate(flats, [0,0,1], 90, [0,0,0]);
             %             app.environment = [app.environment, flats];
@@ -31,6 +37,10 @@ classdef Ned
             self.substrate = RobotSubstrate(self.substrateCount);
             %                         self.robot.model.teach();
             self.robot.model.animate([0 0 0 0 0 0]);
+=======
+            self.substrate = RobotSubstrate(self.substrateCount);
+%                         self.model.teach();
+>>>>>>> 41a347202f0f5b7f018cddc16a303bbbd05112f6
 
         end
         %% Move Robot
@@ -77,6 +87,7 @@ classdef Ned
             % steps = length(self.substrate.substrateModel);
 
             initialGuess = [
+<<<<<<< HEAD
                 -2.2619    1.2566   -2.2724   -0.5027    1.6336         0
                 -2.4504    0.9425   -1.8396   -0.6283    1.5708         0  %actual
                 -2.5447    0.7854   -1.4608   -0.8796    1.5708         0 %actual
@@ -111,6 +122,40 @@ classdef Ned
             % %                 0           0.9739   -1.9478   -0.5655    1.5080    1.7907
             % %                 -0.1885     0.9425   -1.8937   -0.5027    1.5708    1.7907
             %                 ];
+=======
+                 -2.2619    1.2566   -2.2724   -0.5027    1.6336         0
+                 -2.4504    0.9425   -1.8396   -0.6283    1.5708         0  %actual
+                 -2.5447    0.7854   -1.4608   -0.8796    1.5708         0 %actual
+                 -2.6389    0.7854   -1.5149   -0.8168    1.6336    2.6389
+                 ];
+      
+%             group1Guess = [
+%                  -2.2619    1.2566   -2.2724   -0.5027    1.6336         0
+%                  -2.2619    1.2566   -2.2724   -0.5027    1.6336         0 %actual
+% %                 0           0.9739   -1.9478   -0.5655    1.5080    1.7907
+% %                 -0.1885     0.9425   -1.8937   -0.5027    1.5708    1.7907
+%                 ];
+%             group2Guess = [
+%                   -2.4504    0.9425   -1.8396   -0.6283    1.5708         0
+%                   -2.4504    0.9425   -1.8396   -0.6283    1.5708         0  %actual
+% %                 0           0.9739   -1.9478   -0.5655    1.5080    1.7907
+% %                 -0.1885     0.9425   -1.8937   -0.5027    1.5708    1.7907
+%                 ];
+%             
+%             group3Guess = [
+%                 -2.5447    0.7854   -1.4608   -0.8796    1.5708         0
+%                 -2.5447    0.7854   -1.4608   -0.8796    1.5708         0 %actual
+% %                 0           0.9739   -1.9478   -0.5655    1.5080    1.7907
+% %                 -0.1885     0.9425   -1.8937   -0.5027    1.5708    1.7907
+%                 ];
+%             
+%             group4Guess = [
+%                 -2.6389    0.7854   -1.5149   -0.8168    1.6336    2.6389
+%                 -2.6389    0.7854   -1.5149   -0.8168    1.6336    2.6389
+% %                 0           0.9739   -1.9478   -0.5655    1.5080    1.7907
+% %                 -0.1885     0.9425   -1.8937   -0.5027    1.5708    1.7907
+%                 ];
+>>>>>>> 41a347202f0f5b7f018cddc16a303bbbd05112f6
 
 
             if mod(self.routeCount, 2) == 0
@@ -141,7 +186,7 @@ classdef Ned
                     waypoint3 = transl(0.21,1.75-(i-1)*14,0.5) * trotx(-pi);
                     waypoint4 = transl(0.21,1.75-(i-1)*14,0.2) * trotx(-pi);
 
-                    guess = initialGuess(1,:);
+%                     guess = initialGuess(1,:);
 
                     % waypoint = {waypoint1,waypoint2,waypoint3,waypoint4};
                     % wSteps = length(waypoint);
@@ -151,7 +196,7 @@ classdef Ned
                     waypoint4 = transl(0.28,1.82+(i-5)*14,0.5) * trotx(-pi);
                     waypoint4 = transl(0.28,1.82+(i-5)*14,0.2) * trotx(-pi);
 
-                    guess = initialGuess(1,:);
+%                     guess = initialGuess(1,:);
 
                     % waypoint = {waypoint1,waypoint2,waypoint3,waypoint4};
                     % wSteps = length(waypoint);
@@ -162,7 +207,7 @@ classdef Ned
                     waypoint3 = transl(0.35,1.75+(i-9)*14,0.5) * trotx(-pi);
                     waypoint4 = transl(0.35,1.75+(i-9)*14,0.2) * trotx(-pi);
 
-                    guess = initialGuess(3,:);
+%                     guess = initialGuess(3,:);
                     % waypoint = {waypoint1,waypoint2,waypoint3,waypoint4};
                     % wSteps = length(waypoint);
 
@@ -172,7 +217,7 @@ classdef Ned
                     waypoint3 = transl(0.42,1.82+(i-13)*14,0.5) * trotx(-pi);
                     waypoint4 = transl(0.42,1.82+(i-13)*14,0.2) * trotx(-pi);
 
-                    guess = initialGuess(4,:);
+%                     guess = initialGuess(4,:);
 
                     % waypoint = {waypoint1,waypoint2,waypoint3,waypoint4};
                     % wSteps = length(waypoint);
