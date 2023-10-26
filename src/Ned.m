@@ -11,7 +11,7 @@ classdef Ned
     end
     methods
         function self = Ned(tr)
-            close all;
+            % close all;
             % clc;
             baseTr = eye(4);
             if nargin == 1
@@ -24,7 +24,7 @@ classdef Ned
             self.substrate = RobotSubstrate(self.substrateCount);
 
 
-            flats = PlaceObject("2_Flats.ply",[1.5,0.3,0]);
+            % flats = PlaceObject("2_Flats.ply",[1.5,0.3,0]);
             % rotate(flats, [0,0,1], 90, [0,0,0]);
             % app.environment = [app.environment, flats];
 
@@ -36,7 +36,7 @@ classdef Ned
 
 
         function self = doStep(self)
-            if (length(self.stepList) ~= 0)
+            if length(self.stepList) ~= 0
                 self.robot.model.animate(self.stepList(1,:));
                 if (self.holdingObject)
                     self.heldObject.base = self.robot.model.fkine(self.stepList(1,:)) * SE3(trotx(-pi/2));
@@ -72,7 +72,7 @@ classdef Ned
         end
 
         function self = calcNextRoute(self)
-            disp('recalc');
+            % disp('recalc');
             % steps = length(self.substrate.substrateModel);
 
             initialGuess = [
@@ -147,7 +147,7 @@ classdef Ned
                 end
 
                 if 4 < i
-                    waypoint4 = transl(0.28,1.82+(i-5)*14,0.5) * trotx(-pi);
+                    waypoint3 = transl(0.28,1.82+(i-5)*14,0.5) * trotx(-pi);
                     waypoint4 = transl(0.28,1.82+(i-5)*14,0.2) * trotx(-pi);
 
                     guess = initialGuess(1,:);
