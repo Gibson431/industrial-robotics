@@ -28,8 +28,8 @@ classdef Elle < UR3
 
         %% Move Robot
         %end pos
-        % (1) (1.38,0.1,0)(1.38,0.28,0)(1.38,0.46,0)(1.38,0.64,0)
-        % (2) (1.46,0.19,0)(1.46,0.37,0)(1.46,0.55,0)(1.46,0.73,0)
+        % (1) (0.1,0.4-(i-1)*1.4,0.1)
+        % (2) (0.28,1.82+(i-5)*14,0.2)
         % (3) (1.52,0.1,0)(1.52,0.28,0)(1.52,0.46,0)(1.52,0.64,0)
         % (4) (1.6,0.19,0)(1.6,0.37,0)(1.6,0.55,0)(1,6,0.73,0)
 
@@ -84,24 +84,24 @@ classdef Elle < UR3
         function self = calcNextRoute(self)
             disp('recalc');
             % steps = length(self.substrate.substrateModel);
-            initialGuess = [
-                0.3770   -0.8796    2.2619   -1.3823    1.6336         0
-                0.3770   -0.8796    2.2619   -1.3823    1.6336         0
-                0.3770   -0.8796    2.2619   -1.3823    1.6336         0
-                0.3770   -0.8796    2.2619   -1.3823    1.6336         0
-                0   -1.1310    .5133   -1.3823    1.6336         0
-                0   -1.1310    .5133   -1.3823    1.6336         0
-                0   -1.1310    .5133   -1.3823    1.6336         0
-                0   -1.1310    .5133   -1.3823    1.6336         0
-                3.7699   -2.0106   -2.5133   -1.7593   -1.0053         0
-                3.7699   -2.0106   -2.5133   -1.7593   -1.0053         0
-                3.7699   -2.0106   -2.5133   -1.7593   -1.0053         0
-                3.7699   -2.0106   -2.5133   -1.7593   -1.0053         0
-                3.2673   -2.0106   -2.3876   -2.0106   -1.3823         0
-                3.2673   -2.0106   -2.3876   -2.0106   -1.3823         0
-                3.2673   -2.0106   -2.3876   -2.0106   -1.3823         0
-                3.2673   -2.0106   -2.3876   -2.0106   -1.3823         0
-                ];
+%             initialGuess = [
+%                 0.3770   -0.8796    2.2619   -1.3823    1.6336         0
+%                 0.3770   -0.8796    2.2619   -1.3823    1.6336         0
+%                 0.3770   -0.8796    2.2619   -1.3823    1.6336         0
+%                 0.3770   -0.8796    2.2619   -1.3823    1.6336         0
+%                 0   -1.1310    .5133   -1.3823    1.6336         0
+%                 0   -1.1310    .5133   -1.3823    1.6336         0
+%                 0   -1.1310    .5133   -1.3823    1.6336         0
+%                 0   -1.1310    .5133   -1.3823    1.6336         0
+%                 3.7699   -2.0106   -2.5133   -1.7593   -1.0053         0
+%                 3.7699   -2.0106   -2.5133   -1.7593   -1.0053         0
+%                 3.7699   -2.0106   -2.5133   -1.7593   -1.0053         0
+%                 3.7699   -2.0106   -2.5133   -1.7593   -1.0053         0
+%                 3.2673   -2.0106   -2.3876   -2.0106   -1.3823         0
+%                 3.2673   -2.0106   -2.3876   -2.0106   -1.3823         0
+%                 3.2673   -2.0106   -2.3876   -2.0106   -1.3823         0
+%                 3.2673   -2.0106   -2.3876   -2.0106   -1.3823         0
+%                 ];
 
 
             disp("route count: ");
@@ -122,10 +122,10 @@ classdef Elle < UR3
 
                 currentJointState = self.model.getpos;
 
-                nextJointState = self.model.ikcon(waypoint1, initialGuess(i,:));
+                nextJointState = self.model.ikcon(waypoint1);
                 self = self.moveElle(currentJointState, nextJointState);
 
-                nextJointState = self.model.ikcon(waypoint2,initialGuess(i,:));
+                nextJointState = self.model.ikcon(waypoint2);
                 self = self.moveElle(self.stepList(end,:), nextJointState);
 
             else
@@ -234,7 +234,8 @@ classdef Elle < UR3
             qMatrix = jtraj(currentJointState,toJointState,steps);
             self.stepList = [self.stepList; qMatrix];
             for i = 1:steps
-                % self.netpot.netpotModel{i}.base = self.model.fkine(qMatrix(i,:)) * SE3(troty(pi/2));
+                
+                self.netpot.netpotModel{i}.base = self.model.fkine(qMatrix(i,:)) * SE3(troty(pi/2));
 
                 self.model.animate(qMatrix(i,:));
                 drawnow();
