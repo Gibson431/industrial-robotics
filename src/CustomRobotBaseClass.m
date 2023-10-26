@@ -69,7 +69,7 @@ classdef CustomRobotBaseClass < handle
 %% delete
         % Try to clean up gracefully by deleting just this robot plot
         function delete(self)
-            handles = findobj('Tag', self.model.name);
+            handles = findobj('Tag', self.model.name)
             h = get(handles,'UserData');
             try delete(h.robot); end 
             try delete(h.wrist); end
@@ -201,14 +201,14 @@ classdef CustomRobotBaseClass < handle
             [ax,by] = view;
             
             roughMinMax = sum(abs(self.model.d) + abs(self.model.a));
-            % self.workspace = [-roughMinMax roughMinMax -roughMinMax roughMinMax -0.01 roughMinMax]; 
+            self.workspace = [-roughMinMax roughMinMax -roughMinMax roughMinMax -0.01 roughMinMax]; 
 
             self.model.plot3d(self.homeQ,'noarrow','nowrist','workspace',self.workspace,'view',[ax,by],'notiles');            
 
             % Check if a single surface has been added by plot3d
-            if self.CountTiledFloorSurfaces() - initialSurfaceCount == 1
-                self.surfaceAdded = true;
-            end
+            % if self.CountTiledFloorSurfaces() - initialSurfaceCount == 1
+            %     self.surfaceAdded = true;
+            % end
 
             % Check if a light needs to be added
             if isempty(findobj(get(gca,'Children'),'Type','Light'))
@@ -217,7 +217,7 @@ classdef CustomRobotBaseClass < handle
             end
 
             self.model.delay = 0;
-            handles = findobj('Tag', self.model.name);
+            handles = findobj('Tag', self.model.name)
             h = get(handles,'UserData');
         end
 

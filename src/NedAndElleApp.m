@@ -248,11 +248,11 @@ classdef NedAndElleApp < matlab.apps.AppBase
         function app = NedAndElleApp
 
             % Create UIFigure and components
-            creatComponents(app)
+            creatComponents(app);
 
 
             % Register the app with App Designer
-            registerApp(app, app.UIFigure)
+            registerApp(app, app.UIFigure);
 
 
             % Create Environment
@@ -268,16 +268,13 @@ classdef NedAndElleApp < matlab.apps.AppBase
 
         % Code that executes before app deletion
         function delete(app)
-
+    
             % Delete UIFigure when app is deleted
             delete(app.UIFigure)
         end
 
         function app = processLoop(app)
-            pause(3);
-            disp(app.NedRobot.model.name);
             while (true)
-                disp(app.environment);
                 if (app.EStopSwitch.Value == "Off")
                     app.NedRobot.doStep();
                     app.ElleRobot.doStep();

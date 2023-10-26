@@ -4,7 +4,7 @@ classdef Ned
         substrate;
         substrateCount = 16;
         substrateIndex = 0;
-        stepList;
+        stepList = [];
         holdingObject = false;
         heldObject;
         routeCount = 1;
@@ -12,25 +12,24 @@ classdef Ned
     methods
         function self = Ned(tr)
             close all;
-            clc;
+            % clc;
             baseTr = eye(4);
             if nargin == 1
                 baseTr = tr;
             end
             self.robot = omronTM5(baseTr);
             self.robot.model.base = baseTr * transl(0.9,0.5,0);
-            %             self.robot.model.animate([0 pi/2 0 0 0 0]);
+            self.robot.model.animate([0 0 0 0 0 0]);
+
             self.substrate = RobotSubstrate(self.substrateCount);
 
-            %             self.stepNed();
 
             flats = PlaceObject("2_Flats.ply",[1.5,0.3,0]);
-            %             rotate(flats, [0,0,1], 90, [0,0,0]);
-            %             app.environment = [app.environment, flats];
+            % rotate(flats, [0,0,1], 90, [0,0,0]);
+            % app.environment = [app.environment, flats];
 
             self.substrate = RobotSubstrate(self.substrateCount);
-            %                         self.robot.model.teach();
-            self.robot.model.animate([0 0 0 0 0 0]);
+            % self.robot.model.teach();
 
         end
         %% Move Robot
@@ -126,7 +125,7 @@ classdef Ned
                 waypoint1 = transl(bx_pos,by_pos, bz_pos + 0.1) * trotx(-pi);
                 waypoint2 = transl(bx_pos,by_pos,bz_pos + 0.02) * trotx(-pi);
 
-                currentJointState = self.robot.model.getpos;
+                currentJointState = self.robot.model.getpos();
 
                 nextJointState = self.robot.model.ikcon(waypoint1, guess);
                 self.moveNed(currentJointState, nextJointState);
@@ -182,13 +181,14 @@ classdef Ned
                 % nextJointState = self.robot.model.ikcon(waypoint3,guess);
                 % self.moveNedSubstrate(i, nextJointState);
 
-                currentJointState = self.robot.model.getpos;
+                currentJointState = self.robot.model.getpos();
 
                 nextJointState = self.robot.model.ikcon(waypoint3, guess);
-                self.moveNedSubstrate(i, currentJointState, nextJointState);
+                self = self.moveNedSubstrate(i, currentJointState, nextJointState);
 
                 nextJointState = self.robot.model.ikcon(waypoint4, guess);
-                self.moveNedSubstrate(i, self.stepList(end,:), nextJointState);
+                disp(length(self.stepList))
+                self = self.moveNedSubstrate(i, self.stepList(end,:), nextJointState);
 
 
             end
@@ -241,7 +241,7 @@ classdef Ned
         end
 
         function self =  moveNedSubstrate(self,i,fromJointState, toJointState)
-            self.moveNed(fromJointState, toJointState);
+            self = self.moveNed(fromJointState, toJointState);
             self.holdingObject = true;
             self.heldObject = self.substrate.substrateModel{i};
             % currentJointState = self.robot.model.getpos;
