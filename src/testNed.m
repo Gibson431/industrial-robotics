@@ -25,7 +25,7 @@ end
 %     0.4712    0.5655    1.8937   -2.5133   -1.5080    2.4504 -> far row
 
 % above tray guess
-%     2.6389    0.2199    1.3526   -1.5708   -1.5708    2.4504 %note: may
+%     0   -0.4398   -1.1362   -1.5708    1.5080         0  %note: may
 %     need to do better guesses than this but we will try it out
 
 % end pos guess
