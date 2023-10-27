@@ -11,6 +11,10 @@ z_pos = origin.t(3);
 %     z_pos-0.9,z_pos-0.9],'CData',imread('concrete.jpg'),'FaceColor','texturemap');
 % app.environment = [app.environment, surface];
 
+room = PlaceObject("room.ply",[x_pos-2.1,y_pos-3.25,z_pos-1]);
+% rotate(flats, [0,0,1], 90, [0,0,0]);
+app.environment = [app.environment, room];
+
 
 flats = PlaceObject("2_Flats.ply",[x_pos+1.5,y_pos+0.3,z_pos]);
 % rotate(flats, [0,0,1], 90, [0,0,0]);
