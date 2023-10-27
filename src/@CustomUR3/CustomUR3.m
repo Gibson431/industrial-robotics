@@ -1,4 +1,4 @@
-classdef UR3 < CustomRobotBaseClass
+classdef CustomUR3 < CustomRobotBaseClass
     %% UR3 Universal Robot 3kg payload robot model
     %
     % WARNING: This model has been created by UTS students in the subject
@@ -12,7 +12,7 @@ classdef UR3 < CustomRobotBaseClass
     
     methods
 %% Constructor
-        function self = UR3(baseTr,useTool,toolFilename)
+        function self = CustomUR3(baseTr,useTool,toolFilename)
             if nargin < 3
                 if nargin == 2
                     error('If you set useTool you must pass in the toolFilename as well');
@@ -37,7 +37,7 @@ classdef UR3 < CustomRobotBaseClass
 %% CreateModel
         function CreateModel(self)
             link(1) = Link('d',0.1519,'a',0,'alpha',pi/2,'qlim',deg2rad([-360 360]), 'offset',0);
-            link(2) = Link('d',0,'a',-0.24365,'alpha',0,'qlim', deg2rad([-360 360]), 'offset',0);
+            link(2) = Link('d',0,'a',-0.24365,'alpha',0,'qlim', deg2rad([-360 360]), 'offset', -pi/2);
             link(3) = Link('d',0,'a',-0.21325,'alpha',0,'qlim', deg2rad([-360 360]), 'offset', 0);
             link(4) = Link('d',0.11235,'a',0,'alpha',pi/2,'qlim',deg2rad([-360 360]),'offset', 0);
             link(5) = Link('d',0.08535,'a',0,'alpha',-pi/2,'qlim',deg2rad([-360,360]), 'offset',0);
