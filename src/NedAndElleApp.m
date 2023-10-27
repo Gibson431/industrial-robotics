@@ -35,6 +35,7 @@ classdef NedAndElleApp < matlab.apps.AppBase
         onePanelWidth = 576;
         twoPanelWidth = 768;
         eStop = false;
+        stepsComplete = 0;
     end
     methods (Access = private)
         function LeftButtonPressed(app, event)
@@ -255,9 +256,9 @@ classdef NedAndElleApp < matlab.apps.AppBase
 
             % Create Environment
             origin = SE3(transl(0,0,0));
-            % app = CreateAppEnvironment(app, origin);
+            app = CreateAppEnvironment(app, origin);
 
-            % app.processLoop();
+            app.processLoop();
             disp('process loop commented out');
 
             if nargout == 0
@@ -275,8 +276,11 @@ classdef NedAndElleApp < matlab.apps.AppBase
         function app = processLoop(app)
             while (true)
                 if (app.EStopSwitch.Value == "Off")
-                    app.NedRobot.doStep();
+                    app.stepsComplete = app.stepsComplete + 1;
                     app.ElleRobot.doStep();
+                    if (app.stepsComplete >= 40)
+                        app.NedRobot.doStep();
+                    end
                 else
                     pause(0.1);
                 end

@@ -1,6 +1,6 @@
-classdef Ned
+classdef Ned < omronTM5
     properties
-        robot;
+        % robot;
         substrate;
         substrateCount = 16;
         substrateIndex = 0;
@@ -11,43 +11,26 @@ classdef Ned
     end
     methods
         function self = Ned(tr)
-            % close all;
-            % clc;
             baseTr = eye(4);
             if nargin == 1
                 baseTr = tr;
             end
-            self.robot = omronTM5(baseTr);
-            self.robot.model.base = baseTr * transl(0.9,0.5,0);
-            self.robot.model.animate([0 0 0 0 0 0]);
-
+            self.model.base = baseTr * transl(0.9,0.5,0);
+            self.model.animate([0 0 0 0 0 0]);
             self.substrate = RobotSubstrate(self.substrateCount);
-
-
-            % flats = PlaceObject("2_Flats.ply",[1.5,0.3,0]);
-            % rotate(flats, [0,0,1], 90, [0,0,0]);
-            % app.environment = [app.environment, flats];
-
-            self.substrate = RobotSubstrate(self.substrateCount);
-            % self.robot.model.teach();
-
         end
         %% Move Robot
 
 
         function self = doStep(self)
-            if length(self.stepList) ~= 0
-                self.robot.model.animate(self.stepList(1,:));
-                if (self.holdingObject)
-                    self.heldObject.base = self.robot.model.fkine(self.stepList(1,:)) * SE3(trotx(-pi/2));
-                    self.heldObject.animate(0);
-                end
+            if ~isempty(self.stepList)
+                self.jog(self.stepList(1,:));
 
-                if length(self.stepList) == 1
+                if length(self.stepList(:,end)) == 1
                     self.routeCount = self.routeCount + 1;
                     self.holdingObject = false;
                     self.calcNextRoute();
-                    self.stepsList = [];
+                    self.stepList = [];
                 else
                     self.stepList = self.stepList(2:end, :);
                 end
@@ -57,22 +40,23 @@ classdef Ned
 
             elseif (self.holdingObject)
                 self.holdingObject = false;
-                self.calcNextRoute();
+                self = self.calcNextRoute();
             else
-                self.calcNextRoute();
+                self = self.calcNextRoute();
             end
         end
 
         function self = jog(self, qVals)
-            self.robot.model.animate(qVals);
+            self.model.animate(qVals);
             if (self.holdingObject)
-                self.heldObject.base = self.robot.model.fkine(qVals) * SE3(trotx(-pi/2));
+                self.heldObject.base = self.model.fkine(qVals) * SE3(trotx(-pi/2));
                 self.heldObject.animate(0);
             end
         end
 
         function self = calcNextRoute(self)
-            % disp('recalc');
+
+            disp('recalc');
             % steps = length(self.substrate.substrateModel);
 
             initialGuess = [
@@ -112,11 +96,12 @@ classdef Ned
             %                 ];
 
 
-            if mod(self.routeCount, 2) == 0
+            if mod(self.routeCount, 2) == 1
                 i = self.routeCount;
                 guess = floor(i/4)+1;
                 guess = initialGuess(guess,:);
-                bTr = self.substrate.substrateModel{i}.base;
+                elleIndex = floor(self.routeCount/2)+1;
+                bTr = self.substrate.substrateModel{elleIndex}.base;
 
                 bx_pos = bTr.t(1);
                 by_pos = bTr.t(2);
@@ -125,16 +110,16 @@ classdef Ned
                 waypoint1 = transl(bx_pos,by_pos, bz_pos + 0.1) * trotx(-pi);
                 waypoint2 = transl(bx_pos,by_pos,bz_pos + 0.02) * trotx(-pi);
 
-                currentJointState = self.robot.model.getpos();
+                currentJointState = self.model.getpos();
 
-                nextJointState = self.robot.model.ikcon(waypoint1, guess);
-                self.moveNed(currentJointState, nextJointState);
+                nextJointState = self.model.ikcon(waypoint1, guess);
+                self = self.moveNed(currentJointState, nextJointState);
 
-                nextJointState = self.robot.model.ikcon(waypoint2, guess);
-                self.moveNed(self.stepList(end,:), nextJointState);
+                nextJointState = self.model.ikcon(waypoint2, guess);
+                self = self.moveNed(self.stepList(end,:), nextJointState);
 
             else
-                i = floor(self.routeCount/2)+1;
+                i = floor(self.routeCount/2);
                 guess = 0;
                 if i <= 4
                     waypoint3 = transl(0.21,1.75-(i-1)*14,0.5) * trotx(-pi);
@@ -177,100 +162,27 @@ classdef Ned
                     % wSteps = length(waypoint);
 
                 end
+                currentJointState = self.model.getpos();
 
-                % nextJointState = self.robot.model.ikcon(waypoint3,guess);
-                % self.moveNedSubstrate(i, nextJointState);
-
-                currentJointState = self.robot.model.getpos();
-
-                nextJointState = self.robot.model.ikcon(waypoint3, guess);
+                nextJointState = self.model.ikcon(waypoint3, guess);
                 self = self.moveNedSubstrate(i, currentJointState, nextJointState);
 
-                nextJointState = self.robot.model.ikcon(waypoint4, guess);
-                disp(length(self.stepList))
+                nextJointState = self.model.ikcon(waypoint4, guess);
                 self = self.moveNedSubstrate(i, self.stepList(end,:), nextJointState);
-
-
             end
-
-
-
-            % for j = 1:wSteps
-            %
-            %     nextJointState = self.robot.model.ikcon(waypoint{j},guess);
-            %     % nextJointState = self.robot.model.ikine(waypoint{j},'mask',[1 1 1 1 1 1]);
-            %     if j<=2
-            %         % nextJointState = self.robot.model.ikine(waypoint{j},'mask',[1 1 1 0 0 0]);
-            %         self.moveNed(nextJointState);
-            %     end
-            %
-            %     if 2<j
-            %         self.moveNedSubstrate(steps,i,nextJointState);
-            %     end
-            %
-            %
-            % end
         end
 
-        function self =  moveNed(self,fromJointState, toJointState)
+        function self = moveNed(self,fromJointState, toJointState)
             currentJointState = fromJointState;
             steps = 20;
-            % s = lspb(0,1,steps);
-            % qMatrix = nan(steps,6);
-            % for k = 1:steps
-            %     qMatrix(k,:) = (1-s(k))*currentJointState + s(k)*nextJointState;
-            % end
-            % x = zeros(6,steps);
-            %  for l = 1:steps-1
-            %      xdot = (x(:,l+1) - x(:,l))/deltaT;
-            %      J = self.robot.model.jacob0(qMatrix(l,:));
-            %      J = J(1:2,:);
-            %      qdot = inv(J)*xdot;
-            %      qMatrix(l+1,:) =  qMatrix(l,:) + deltaT*qdot';
-            %  end
-
             qMatrix = jtraj(currentJointState,toJointState,steps);
             self.stepList = [self.stepList; qMatrix];
-            % for i = 1:steps
-            %     % self.netpot.netpotModel{i}.base = self.robot.model.fkine(qMatrix(i,:)) * SE3(troty(pi/2));
-            %
-            %     self.robot.model.animate(qMatrix(i,:));
-            %     drawnow();
-            %     pause(0.1);
-            % end
         end
 
-        function self =  moveNedSubstrate(self,i,fromJointState, toJointState)
+        function self = moveNedSubstrate(self,i,fromJointState, toJointState)
             self = self.moveNed(fromJointState, toJointState);
             self.holdingObject = true;
             self.heldObject = self.substrate.substrateModel{i};
-            % currentJointState = self.robot.model.getpos;
-            % s = lspb(0,1,steps);
-            % qMatrix = nan(steps,6);
-            % for k = 1:steps
-            %     qMatrix(k,:) = (1-s(k))*currentJointState + s(k)*nextJointState;
-            % end
-            % qSteps = 20;
-            % qMatrix = jtraj(currentJointState, nextJointState,qSteps);
-            % x = zeros(6,steps);
-            %  for l = 1:steps-1
-            %      xdot = (x(:,l+1) - x(:,l))/deltaT;
-            %      J = self.robot.model.jacob0(qMatrix(l,:));
-            %      J = J(1:2,:);
-            %      qdot = inv(J)*xdot;
-            %      qMatrix(l+1,:) =  qMatrix(l,:) + deltaT*qdot';
-            %  end
-            % Animate gripper and brick with end-effector
-            % for j = 1:steps
-            %     self.substrate.substrateModel{i}.base = self.robot.model.fkine(qMatrix(j,:)) * SE3(trotx(-pi/2));
-            %
-            %     self.robot.model.animate(qMatrix(j,:));
-            %     self.substrate.substrateModel{i}.animate(0);
-            %
-            %     drawnow();
-            %     pause(0.1);
-            % end
-
         end
     end
 end

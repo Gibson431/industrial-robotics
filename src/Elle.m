@@ -1,6 +1,5 @@
 classdef Elle < UR3
     properties
-        % robot;
         netpot;
         netpotCount = 16;
         netpotIndex = 0;
@@ -16,16 +15,9 @@ classdef Elle < UR3
             if nargin ~= 0
                 baseTr = tr;
             end
-            % self.robot = UR3(baseTr);
             self.model.base = baseTr * transl(1.5,0,0);
             self.model.animate([0 -pi/2 0 0 0 pi/2]);
-
             self.netpot = RobotNetpots(self.netpotCount);
-            flats = PlaceObject("2_Flats.ply",[1.5,0.3,0]);
-
-            % self.doStep();
-            % self.model.teach();
-
         end
 
         %% Move Robot
@@ -50,11 +42,6 @@ classdef Elle < UR3
             % disp(length(self.stepList));
             if ~isempty(self.stepList)
                 self.jog(self.stepList(1,:));
-                % self.model.animate(self.stepList(1,:)); %goes from waypoint 2 position to up right position
-                % if (self.holdingObject)
-                %     self.heldObject.base = self.model.fkine(self.stepList(1,:)) * SE3(trotx(-pi/2));
-                %     self.heldObject.animate(0);
-                % end
 
                 if length(self.stepList(:,end)) == 1
                     self.routeCount = self.routeCount + 1;
@@ -79,7 +66,6 @@ classdef Elle < UR3
         function self = jog(self, qVals)
             self.model.animate(qVals);
             if (self.holdingObject)
-                % self.heldObject.base = self.model.fkine(qVals) * SE3(trotx(-pi/2));
                 self.heldObject.base = self.model.fkine(qVals)*SE3(transl(0,0,0.05));
                 self.heldObject.animate(0);
             end
@@ -110,7 +96,7 @@ classdef Elle < UR3
                 i = self.routeCount;
                 guess = floor(i/4)+1;
                 guess = initialGuess(guess,:);
-                netIndex = floor(self.routeCount/2)+1
+                netIndex = floor(self.routeCount/2)+1;
                 bTr = self.netpot.netpotModel{netIndex}.base;
 
                 bx_pos = bTr.t(1);
@@ -181,16 +167,12 @@ classdef Elle < UR3
                     %
                     % wSteps = length(waypoint);
                 end
-
-                % nextJointState = self.model.ikcon(waypoint3,guess);
-                % self.moveNedSubstrate(i, nextJointState);
                 currentJointState = self.model.getpos;
 
                 nextJointState = self.model.ikcon(waypoint3);
                 self = self.moveElleNetpot(i, currentJointState, nextJointState);
 
                 nextJointState = self.model.ikcon(waypoint4);
-                % disp(length(self.stepList))
                 self = self.moveElleNetpot(i, self.stepList(end,:), nextJointState);
 
             end
