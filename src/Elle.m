@@ -21,6 +21,8 @@ classdef Elle < UR3
             self.model.animate([0 -pi/2 0 0 0 pi/2]);
 
             self.netpot = RobotNetpots(self.netpotCount);
+            flats = PlaceObject("2_Flats.ply",[1.5,0.3,0]);
+
             % self.doStep();
             % self.model.teach();
 
@@ -44,20 +46,21 @@ classdef Elle < UR3
 
 
         function self = doStep(self)
-            disp("step list length top: ");
-            disp(length(self.stepList));
-            if length(self.stepList) ~= 0
-                self.model.animate(self.stepList(1,:)); %goes from waypoint 2 position to up right position
-                if (self.holdingObject)
-                    self.heldObject.base = self.model.fkine(self.stepList(1,:)) * SE3(trotx(-pi/2));
-                    self.heldObject.animate(0);
-                end
+            % disp("step list length top: ");
+            % disp(length(self.stepList));
+            if ~isempty(self.stepList)
+                self.jog(self.stepList(1,:));
+                % self.model.animate(self.stepList(1,:)); %goes from waypoint 2 position to up right position
+                % if (self.holdingObject)
+                %     self.heldObject.base = self.model.fkine(self.stepList(1,:)) * SE3(trotx(-pi/2));
+                %     self.heldObject.animate(0);
+                % end
 
-                if length(self.stepList) >= 1
+                if length(self.stepList(:,end)) == 1
                     self.routeCount = self.routeCount + 1;
                     self.holdingObject = false;
                     self.calcNextRoute();
-                    self.stepsList = []; %Unrecognized property 'stepsList' for class 'Elle' after 2nd step
+                    self.stepList = [];
                 else
                     self.stepList = self.stepList(2:end, :);
                 end
@@ -76,41 +79,39 @@ classdef Elle < UR3
         function self = jog(self, qVals)
             self.model.animate(qVals);
             if (self.holdingObject)
-                self.heldObject.base = self.model.fkine(qVals) * SE3(trotx(-pi/2));
+                % self.heldObject.base = self.model.fkine(qVals) * SE3(trotx(-pi/2));
+                self.heldObject.base = self.model.fkine(qVals)*SE3(transl(0,0,0.05));
                 self.heldObject.animate(0);
             end
         end
 
         function self = calcNextRoute(self)
-            disp('recalc');
-            % steps = length(self.substrate.substrateModel);
-%             initialGuess = [
-%                 0.3770   -0.8796    2.2619   -1.3823    1.6336         0
-%                 0.3770   -0.8796    2.2619   -1.3823    1.6336         0
-%                 0.3770   -0.8796    2.2619   -1.3823    1.6336         0
-%                 0.3770   -0.8796    2.2619   -1.3823    1.6336         0
-%                 0   -1.1310    .5133   -1.3823    1.6336         0
-%                 0   -1.1310    .5133   -1.3823    1.6336         0
-%                 0   -1.1310    .5133   -1.3823    1.6336         0
-%                 0   -1.1310    .5133   -1.3823    1.6336         0
-%                 3.7699   -2.0106   -2.5133   -1.7593   -1.0053         0
-%                 3.7699   -2.0106   -2.5133   -1.7593   -1.0053         0
-%                 3.7699   -2.0106   -2.5133   -1.7593   -1.0053         0
-%                 3.7699   -2.0106   -2.5133   -1.7593   -1.0053         0
-%                 3.2673   -2.0106   -2.3876   -2.0106   -1.3823         0
-%                 3.2673   -2.0106   -2.3876   -2.0106   -1.3823         0
-%                 3.2673   -2.0106   -2.3876   -2.0106   -1.3823         0
-%                 3.2673   -2.0106   -2.3876   -2.0106   -1.3823         0
-%                 ];
+            steps = length(self.netpot.netpotModel);
+            initialGuess = [
+                0.3770   -0.8796    2.2619   -1.3823    1.6336         0
+                0.3770   -0.8796    2.2619   -1.3823    1.6336         0
+                0.3770   -0.8796    2.2619   -1.3823    1.6336         0
+                0.3770   -0.8796    2.2619   -1.3823    1.6336         0
+                0   -1.1310    .5133   -1.3823    1.6336         0
+                0   -1.1310    .5133   -1.3823    1.6336         0
+                0   -1.1310    .5133   -1.3823    1.6336         0
+                0   -1.1310    .5133   -1.3823    1.6336         0
+                3.7699   -2.0106   -2.5133   -1.7593   -1.0053         0
+                3.7699   -2.0106   -2.5133   -1.7593   -1.0053         0
+                3.7699   -2.0106   -2.5133   -1.7593   -1.0053         0
+                3.7699   -2.0106   -2.5133   -1.7593   -1.0053         0
+                3.2673   -2.0106   -2.3876   -2.0106   -1.3823         0
+                3.2673   -2.0106   -2.3876   -2.0106   -1.3823         0
+                3.2673   -2.0106   -2.3876   -2.0106   -1.3823         0
+                3.2673   -2.0106   -2.3876   -2.0106   -1.3823         0
+                ];
 
-
-            disp("route count: ");
-            disp(self.routeCount);
             if mod(self.routeCount, 2) == 1
                 i = self.routeCount;
                 guess = floor(i/4)+1;
                 guess = initialGuess(guess,:);
-                bTr = self.netpot.netpotModel{i}.base;
+                netIndex = floor(self.routeCount/2)+1
+                bTr = self.netpot.netpotModel{netIndex}.base;
 
                 bx_pos = bTr.t(1);
                 by_pos = bTr.t(2);
@@ -129,11 +130,15 @@ classdef Elle < UR3
                 self = self.moveElle(self.stepList(end,:), nextJointState);
 
             else
-                i = floor(self.routeCount/2)+1;
+                i = floor(self.routeCount/2);
                 % guess = 0;
                 if i <= 4
-                    waypoint3 = transl(0.1,0.4-(i-1)*1.4,0.5) * trotx(-pi);
-                    waypoint4 = transl(0.1,0.4-(i-1)*1.4,0.1) * trotx(-pi);
+                    % waypoint3 = transl(0.1,0.4-(i-1)*1.4,0.5) * trotx(-pi);
+                    % waypoint4 = transl(0.1,0.4-(i-1)*1.4,0.1) * trotx(-pi);
+                    waypoint3 = transl(1.27,0.2+(i-1)*0.7,0.2)*trotx(-pi/2);
+                    waypoint4 = transl(1.27,0.2+(i-1)*0.7,0.05)*trotx(-pi/2);
+
+
                     % waypoint = {waypoint1,waypoint2,waypoint3,waypoint4};
 
                     % initialGuesses = {waypoint1Guess(1,:),waypoint2Guess(1,:),waypoint3Guess,waypoint4Guess}
@@ -179,99 +184,30 @@ classdef Elle < UR3
 
                 % nextJointState = self.model.ikcon(waypoint3,guess);
                 % self.moveNedSubstrate(i, nextJointState);
-               
                 currentJointState = self.model.getpos;
 
                 nextJointState = self.model.ikcon(waypoint3);
                 self = self.moveElleNetpot(i, currentJointState, nextJointState);
 
                 nextJointState = self.model.ikcon(waypoint4);
-                disp(length(self.stepList))
+                % disp(length(self.stepList))
                 self = self.moveElleNetpot(i, self.stepList(end,:), nextJointState);
-                
+
             end
 
-            % for j = 1:wSteps
-            %     if j==1
-            %         nextJointState = self.model.ikcon(waypoint{j}, initialGuesses{j});
-            %     else
-            %         nextJointState = self.model.ikcon(waypoint{j});
-            %     end
-            %     if j<=2
-            %         % nextJointState = self.model.ikine(waypoint{j},'mask',[1 1 1 1 1 0]);
-            %         self.moveElle(nextJointState);
-            %     end
-            %     if 2<j
-            %         % nextJointState = self.model.ikine(waypoint{j},'mask',[1 1 1 1 1 1]);
-            %         % nextJointState = self.model.ikcon(waypoint{j});
-            %         self.moveElleNetpot(steps,i,nextJointState);
-            %     end
-            %     % if 4<j
-            %     %     nextJointState = self.model.ikine(waypoint{j},'mask',[1 1 1 1 1 0]);
-            %     %     self.moveElle(nextJointState);
-            %     % end
-            % end
-            disp("step list length end: ");
-            disp(length(self.stepList));
         end
 
         function self =  moveElle(self,fromJointState, toJointState)
             currentJointState = fromJointState;
             steps = 20;
-            % s = lspb(0,1,steps);
-            % qMatrix = nan(steps,6);
-            % for k = 1:steps
-            %     qMatrix(k,:) = (1-s(k))*currentJointState + s(k)*nextJointState;
-            % end
-            % x = zeros(6,steps);
-            %  for l = 1:steps-1
-            %      xdot = (x(:,l+1) - x(:,l))/deltaT;
-            %      J = self.model.jacob0(qMatrix(l,:));
-            %      J = J(1:2,:);
-            %      qdot = inv(J)*xdot;
-            %      qMatrix(l+1,:) =  qMatrix(l,:) + deltaT*qdot';
-            %  end
             qMatrix = jtraj(currentJointState,toJointState,steps);
             self.stepList = [self.stepList; qMatrix];
-            for i = 1:steps
-                
-                self.netpot.netpotModel{i}.base = self.model.fkine(qMatrix(i,:)) * SE3(troty(pi/2));
-
-                self.model.animate(qMatrix(i,:));
-                drawnow();
-                pause(0.1);
-            end
         end
 
         function self =  moveElleNetpot(self,i,fromJointState,toJointState)
-            % self.moveElle(fromJointState, toJointState);
+            self.moveElle(fromJointState, toJointState);
             self.holdingObject = true;
             self.heldObject = self.netpot.netpotModel{i};
-            % s = lspb(0,1,steps);
-            % qMatrix = nan(steps,6);
-            % for k = 1:steps
-            %     qMatrix(k,:) = (1-s(k))*currentJointState + s(k)*nextJointState;
-            % end
-            qSteps = 20;
-            qMatrix = jtraj(fromJointState, toJointState,qSteps);
-            % x = zeros(6,steps);
-            %  for l = 1:steps-1
-            %      xdot = (x(:,l+1) - x(:,l))/deltaT;
-            %      J = self.model.jacob0(qMatrix(l,:));
-            %      J = J(1:2,:);
-            %      qdot = inv(J)*xdot;
-            %      qMatrix(l+1,:) =  qMatrix(l,:) + deltaT*qdot';
-            %  end
-            % Animate gripper and brick with end-effector
-            for j = 1:qSteps
-                self.netpot.netpotModel{i}.base = self.model.fkine(qMatrix(j,:)) * SE3(troty(pi/2)) *SE3(trotx(-pi/2));
-
-                self.model.animate(qMatrix(j,:));
-                self.netpot.netpotModel{i}.animate(0);
-
-                drawnow();
-                pause(0.1);
-            end
         end
     end
 end
