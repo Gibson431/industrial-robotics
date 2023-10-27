@@ -59,7 +59,6 @@ classdef Ned < omronTM5
             disp('recalc');
             % steps = length(self.substrate.substrateModel);
 
-
             group1Guess = [
                 0.2827    0.3142    2.0019   -2.3248   -1.5708    2.4504
                 0.1885    0.4712    2.1642   -2.7018   -1.5080    2.4504
@@ -87,12 +86,12 @@ classdef Ned < omronTM5
                 2.6389    0.2199    1.3526   -1.5708   -1.5708    2.4504
                 2.5447    0.6283    1.7314   -2.3876   -1.5080    2.4504
                 ];
-
+            guesses = {group1Guess, group2Guess, group3Guess, group4Guess};
 
             if mod(self.routeCount, 2) == 1
-                i = self.routeCount;
-                guess = floor(i/4)+1;
-                guess = initialGuess(guess,:);
+                % i = self.routeCount;
+                % guess = floor(i/4)+1;
+                % guess = initialGuess(guess,:);
                 elleIndex = floor(self.routeCount/2)+1;
                 bTr = self.substrate.substrateModel{elleIndex}.base;
 
@@ -105,30 +104,31 @@ classdef Ned < omronTM5
 
                 currentJointState = self.model.getpos();
 
-                nextJointState = self.model.ikcon(waypoint1, guess);
+                groupIndex = floor(elleIndex/4)+1;
+                nextJointState = self.model.ikcon(waypoint1, guesses{groupIndex}(1,:));
                 self = self.moveNed(currentJointState, nextJointState);
 
-                nextJointState = self.model.ikcon(waypoint2, guess);
+                nextJointState = self.model.ikcon(waypoint2, guesses{groupIndex}(2,:));
                 self = self.moveNed(self.stepList(end,:), nextJointState);
 
             else
                 i = floor(self.routeCount/2);
                 guess = 0;
                 if i <= 4
-                    waypoint3 = transl(0.21,1.75-(i-1)*14,0.5) * trotx(-pi);
-                    waypoint4 = transl(0.21,1.75-(i-1)*14,0.2) * trotx(-pi);
+                    waypoint3 = transl(0.21,1.75-(i-1)*0.14,0.5) * trotx(-pi);
+                    waypoint4 = transl(0.21,1.75-(i-1)*0.14,0.2) * trotx(-pi);
 
-                    guess = initialGuess(1,:); % no longer using initial guess array
+                    % guess = initialGuess(1,:); % no longer using initial guess array
 
                     % waypoint = {waypoint1,waypoint2,waypoint3,waypoint4};
                     % wSteps = length(waypoint);
                 end
 
                 if 4 < i
-                    waypoint3 = transl(0.28,1.82+(i-5)*14,0.5) * trotx(-pi);
-                    waypoint4 = transl(0.28,1.82+(i-5)*14,0.2) * trotx(-pi);
+                    waypoint3 = transl(0.28,1.82+(i-5)*0.14,0.5) * trotx(-pi);
+                    waypoint4 = transl(0.28,1.82+(i-5)*0.14,0.2) * trotx(-pi);
 
-                    guess = initialGuess(1,:);
+                    % guess = initialGuess(1,:);
 
                     % waypoint = {waypoint1,waypoint2,waypoint3,waypoint4};
                     % wSteps = length(waypoint);
@@ -136,31 +136,33 @@ classdef Ned < omronTM5
                 end
 
                 if 8 < i
-                    waypoint3 = transl(0.35,1.75+(i-9)*14,0.5) * trotx(-pi);
-                    waypoint4 = transl(0.35,1.75+(i-9)*14,0.2) * trotx(-pi);
+                    waypoint3 = transl(0.35,1.75+(i-9)*0.14,0.5) * trotx(-pi);
+                    waypoint4 = transl(0.35,1.75+(i-9)*0.14,0.2) * trotx(-pi);
 
-                    guess = initialGuess(3,:);
+                    % guess = initialGuess(3,:);
                     % waypoint = {waypoint1,waypoint2,waypoint3,waypoint4};
                     % wSteps = length(waypoint);
 
                 end
 
                 if 12 < i
-                    waypoint3 = transl(0.42,1.82+(i-13)*14,0.5) * trotx(-pi);
-                    waypoint4 = transl(0.42,1.82+(i-13)*14,0.2) * trotx(-pi);
+                    waypoint3 = transl(0.42,1.82+(i-13)*0.14,0.5) * trotx(-pi);
+                    waypoint4 = transl(0.42,1.82+(i-13)*0.14,0.2) * trotx(-pi);
 
-                    guess = initialGuess(4,:);
+                    % guess = initialGuess(4,:);
 
                     % waypoint = {waypoint1,waypoint2,waypoint3,waypoint4};
                     % wSteps = length(waypoint);
 
                 end
                 currentJointState = self.model.getpos();
-
-                nextJointState = self.model.ikcon(waypoint3, guess);
+                
+                elleIndex = floor(self.routeCount/2)+1;
+                groupIndex = floor(elleIndex/4)+1;
+                nextJointState = self.model.ikcon(waypoint3, guesses{groupIndex}(3,:));
                 self = self.moveNedSubstrate(i, currentJointState, nextJointState);
 
-                nextJointState = self.model.ikcon(waypoint4, guess);
+                nextJointState = self.model.ikcon(waypoint4, guesses{groupIndex}(4,:));
                 self = self.moveNedSubstrate(i, self.stepList(end,:), nextJointState);
             end
         end
