@@ -4,10 +4,10 @@ clc
 hold on
 robot = Ned(eye(4));
 flats = PlaceObject("2_Flats.ply",[1.5,0.3,0]);
-% robot.model.teach();
-while true
-    robot.doStep();
-end
+robot.model.teach();
+% while true
+%     robot.doStep();
+% end
 
 %% guesses
 
@@ -29,8 +29,4 @@ end
 %     need to do better guesses than this but we will try it out
 
 % end pos guess
-%     2.8274    0.6283    1.7314   -2.3876   -1.5080    2.4504 ->1.5
-%     2.8274    0.6283    1.7314   -2.3876   -1.5080    2.4504
-%     2.5447    0.6283    1.7314   -2.3876   -1.5080    2.4504
-%     2.5447    0.6283    1.7314   -2.3876   -1.5080    2.4504 -> 1
-
+%     0   -0.5969   -1.5691   -0.9425    1.3823         0
