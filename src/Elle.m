@@ -1,6 +1,5 @@
-classdef Elle < UR3
+classdef Elle < CustomUR3
     properties
-        % robot;
         netpot;
         netpotCount = 16;
         netpotIndex = 0;
@@ -8,39 +7,52 @@ classdef Elle < UR3
         holdingObject = false;
         heldObject;
         routeCount = 1;
+        guesses = {[
+            -1.5708   -0.7854   -1.5708   -0.7854    1.5708    0.0000
+            -1.5708   -0.7854   -1.5708   -0.7854    1.5708    0.0000
+            -1.5708    0.7854    1.5708   -2.3562   -1.5708         0
+            -1.5708    0.7854    1.5708   -2.3562   -1.5708         0
+            ],[
+            -1.5708   -0.7854   -1.5708-0.7854   -0.7854    1.5708    0.0000
+            -1.5708   -0.7854   -1.5708-0.7854   -0.7854    1.5708    0.0000
+            -1.5708    0.7854    1.5708   -2.3562   -1.5708         0
+            -1.5708    0.7854    1.5708   -2.3562   -1.5708         0
+            ],[
+            -1.5708   -0.7854   -1.5708-0.7854   -0.7854    1.5708    0.0000
+            -1.5708   -0.7854   -1.5708-0.7854   -0.7854    1.5708    0.0000
+            -1.5708    0.7854    1.5708   -2.3562   -1.5708         0
+            -1.5708    0.7854    1.5708   -2.3562   -1.5708         0
+            ],[
+            -1.5708+0.7854   -0.7854   -1.5708   -0.7854    1.5708    0.0000
+            -1.5708+0.7854   -0.7854   -1.5708   -0.7854    1.5708    0.0000
+            -1.5708    0.7854    1.5708   -2.3562   -1.5708         0
+            -1.5708    0.7854    1.5708   -2.3562   -1.5708         0
+            ]};
+        gripperOffset = SE3(transl(0,0,0.05));
+
     end
     methods
         function self = Elle(tr)
-            close all;
-            clc;
+
             baseTr = eye(4);
             if nargin ~= 0
                 baseTr = tr;
             end
-            % self.robot = UR3(baseTr);
-            self.model.base = baseTr;
-            self.model.animate([0 -pi/2 0 0 0 pi/2]);
-
+            self.model.base = baseTr * transl(1.5,-0.05,0);
+            self.model.animate([0 0 0 0 0 pi/2]);
             self.netpot = RobotNetpots(self.netpotCount);
-            % self.doStep();
-            %             self.model.teach();
-
         end
 
         %% Move Robot
         function self = doStep(self)
-            if (length(self.stepList) ~= 0)
-                self.model.animate(self.stepList(1,:));
-                if (self.holdingObject)
-                    self.heldObject.base = self.model.fkine(self.stepList(1,:)) * SE3(trotx(-pi/2));
-                    self.heldObject.animate(0);
-                end
+            if ~isempty(self.stepList)
+                self.jog(self.stepList(1,:));
 
-                if length(self.stepList) == 1
-                    self.routeCount = self.routeCount + 1
+                if length(self.stepList(:,end)) == 1
+                    self.routeCount = self.routeCount + 1;
                     self.holdingObject = false;
                     self.calcNextRoute();
-                    self.stepsList = [];
+                    self.stepList = [];
                 else
                     self.stepList = self.stepList(2:end, :);
                 end
@@ -59,231 +71,83 @@ classdef Elle < UR3
         function self = jog(self, qVals)
             self.model.animate(qVals);
             if (self.holdingObject)
-                self.heldObject.base = self.model.fkine(qVals) * SE3(trotx(-pi/2));
+                self.heldObject.base = self.model.fkine(qVals)*self.gripperOffset*SE3(trotx(pi/2));
                 self.heldObject.animate(0);
             end
         end
 
+        function self = rmrc(self)
+            deltaT = 0.05;                                                              % Discrete time step
+
+            minManipMeasure = 0.1;
+            steps = 100;
+            deltaTheta = 2*pi/steps;
+            x = [];
+
+
+        end
+
         function self = calcNextRoute(self)
-            disp('recalc');
-            % steps = length(self.substrate.substrateModel);
+            currentJointState = self.model.getpos();
 
-            %initial guesses
-            % group1Guess = [
-            %     0.3770   -0.8796    2.2619   -1.3823    1.6336         0
-            %     0.3770   -0.8796    2.0106   -1.1310    1.8850    0.0000
-            %     0.3770   -0.8796    0.6283    0.1257    1.7593         0
-            %     0.3770   -0.8796    0.6283    0.1257    1.7593         0];
-            % 
-            % group2Guess = [
-            %     0   -1.1310    .5133   -1.3823    1.6336         0
-            %     0   -1.1310    .5133   -1.3823    1.6336         0
-            %     0.3770   -0.8796    0.6283    0.1257    1.7593         0
-            %     0.3770   -0.8796    0.6283    0.1257    1.7593         0];
-            % 
-            % group3Guess = [
-            %     3.7699   -2.0106   -2.5133   -1.7593   -1.0053         0
-            %     3.7699   -2.0106   -2.5133   -1.7593   -1.0053         0
-            %     0.3770   -0.8796    0.6283    0.1257    1.7593         0
-            %     0.3770   -0.8796    0.6283    0.1257    1.7593         0];
-            % 
-            % group4Guess = [
-            %     3.2673   -2.0106   -2.3876   -2.0106   -1.3823         0
-            %     3.2673   -2.0106   -2.3876   -2.0106   -1.3823         0
-            %     0.3770   -0.8796    0.6283    0.1257    1.7593         0
-            %     0.3770   -0.8796    0.6283    0.1257    1.7593         0];
-            % 
-            % initialGuess = {group1Guess,group2Guess,group3Guess,group4Guess};
-
-            initialGuess = [
-                0.3770   -0.8796    2.2619   -1.3823    1.6336         0
-                0   -1.1310    .5133   -1.3823    1.6336         0
-                3.7699   -2.0106   -2.5133   -1.7593   -1.0053         0
-                3.2673   -2.0106   -2.3876   -2.0106   -1.3823         0
-                ];
-
-            % waypoint1Guess = [
-            %     0.3770   -0.8796    2.2619   -1.3823    1.6336         0
-            %     0   -1.1310    .5133   -1.3823    1.6336         0
-            %     3.7699   -2.0106   -2.5133   -1.7593   -1.0053         0
-            %     3.2673   -2.0106   -2.3876   -2.0106   -1.3823         0
-            %     ];
-
-            % waypoint2Guess = [
-            %     0.3770   -0.8796    2.0106   -1.1310    1.8850    0.0000
-            %     0   -1.1310    .5133   -1.3823    1.6336         0
-            %     3.7699   -2.0106   -2.5133   -1.7593   -1.0053         0
-            %     3.2673   -2.0106   -2.3876   -2.0106   -1.3823         0
-            %     ];
+            if self.routeCount > 32
+                self = self.moveElle(currentJointState, [0 0 0 0 0 0], 20);
+                return
+            end
+            if mod(self.routeCount, 2) == 1
+                currentJointState = self.model.getpos();
 
 
-            waypoint3Guess =    [0.3770   -0.8796    0.6283    0.1257    1.7593         0];
-            waypoint4Guess =    [0.3770   -0.8796    0.6283    0.1257    1.7593         0];
-
-
-            if mod(self.routeCount, 2) == 0
-                i = self.routeCount;
-                guess = floor(i/4)+1;
-                guess = initialGuess(guess,:);
-                bTr = self.netpot.netpotModel{i}.base;
+                netIndex = floor(self.routeCount/2)+1;
+                bTr = self.netpot.netpotModel{netIndex}.base;
 
                 bx_pos = bTr.t(1);
                 by_pos = bTr.t(2);
                 bz_pos = bTr.t(3);
 
-                waypoint1 = transl(bx_pos + 0.1,by_pos, bz_pos) * troty(-pi/2) * trotz(-pi);
-                waypoint2 = transl(bx_pos+0.02,by_pos,bz_pos) * troty(-pi/2) * trotz(-pi);
+                waypoint1 = SE3(transl(bx_pos,by_pos, bz_pos + 0.2)*trotx(pi))*inv(self.gripperOffset);
+                waypoint2 = SE3(transl(bx_pos,by_pos,bz_pos + 0.01)*trotx(pi))*inv(self.gripperOffset);
 
+                groupIndex = floor((netIndex-1)/4)+1;
+                nextJointState = self.model.ikcon(waypoint1, self.guesses{groupIndex}(1,:));
+                self = self.moveElle(currentJointState, nextJointState,20);
 
-                currentJointState = self.model.getpos;
-
-                nextJointState = self.model.ikcon(waypoint1, guess);
-                self.moveElle(currentJointState, nextJointState);
-
-                nextJointState = self.model.ikcon(waypoint2, guess);
-                self.moveElle(self.stepList(end,:), nextJointState);
+                nextJointState = self.model.ikcon(waypoint2, self.guesses{groupIndex}(2,:));
+                self = self.moveElle(self.stepList(end,:), nextJointState,5);
 
             else
-                i = floor(self.routeCount/2)+1;
-                % guess = 0;
-                if i <= 4
-                    waypoint4 = transl(-0.1,0.4-i*0.1,0.2) * troty(-pi/2);
-                    waypoint3 = waypoint4 * transl(0,0,0.2);
+                currentJointState = self.model.getpos();
+                netIndex = floor(self.routeCount/2);
+                groupIndex = floor((netIndex-1)/4)+1;
+                isEven = mod(groupIndex, 2);
+                rowIndex = mod(netIndex-1, 4);
 
-                    % waypoint = {waypoint1,waypoint2,waypoint3,waypoint4};
+                xPos = 1.75-(rowIndex)*0.14-isEven*0.07;
+                yPos = 0.21+(groupIndex-1)*0.07;
 
-                    % initialGuesses = {waypoint1Guess(1,:),waypoint2Guess(1,:),waypoint3Guess,waypoint4Guess}
-                    %
-                    % wSteps = length(waypoint);
-                end
+                waypoint3 = SE3(transl(xPos,yPos,0.2)*trotx(pi)) * inv(self.gripperOffset);
+                waypoint4 = SE3(transl(xPos,yPos,0.05)*trotx(pi)) * inv(self.gripperOffset);
 
-                if 4 < i
-                    waypoint4 = transl(-0.15,0.4-(i-4)*0.05,0.2)* troty(-pi/2);
-                    waypoint3 = waypoint4 * transl(0,0,0.2);
-                   
-                    % waypoint = {waypoint1,waypoint2,waypoint3,waypoint4};
-                    %
-                    % initialGuesses = {waypoint1Guess,waypoint2Guess,waypoint3Guess,waypoint4Guess}
-                    %
-                    % initialGuesses = {waypoint1Guess(2,:),waypoint2Guess(2,:),waypoint3Guess,waypoint4Guess}
-                    %
-                    % wSteps = length(waypoint);
+                nextJointState = self.model.ikcon(waypoint3, self.guesses{groupIndex}(3,:));
+                self = self.moveElleNetpot(netIndex, currentJointState, nextJointState, 20);
 
-                end
-
-                if 8 < i
-                    waypoint4 = transl(0.2,0.4-(i-8)*0.05,0.2)* troty(-pi/2);
-                    waypoint3 = waypoint4 * transl(0,0,0.2);
-
-                    % waypoint = {waypoint1,waypoint2,waypoint3,waypoint4};
-                    %
-                    % initialGuesses = {waypoint1Guess(3,:),waypoint2Guess(3,:),waypoint3Guess,waypoint4Guess}
-                    %
-                    % wSteps = length(waypoint);
-                end
-
-                if 12 < i
-                    waypoint4 = transl(0.25,0.4-(i-12)*0.05,0.2)* troty(-pi/2);
-                    waypoint3 = waypoint4 * transl(0,0,0.2);
-
-                    % waypoint = {waypoint1,waypoint2,waypoint3,waypoint4};
-                    %
-                    % initialGuesses = {waypoint1Guess(4,:),waypoint2Guess(4,:),waypoint3Guess,waypoint4Guess}
-                    %
-                    % wSteps = length(waypoint);
-                end
-
-                % nextJointState = self.model.ikcon(waypoint3,guess);
-                % self.moveNedSubstrate(i, nextJointState);
-
-                currentJointState = self.model.getpos;
-
-                nextJointState = self.model.ikcon(waypoint3, waypoint3Guess);
-                self.moveElleNetpot(i, currentJointState, nextJointState);
-
-                nextJointState = self.model.ikcon(waypoint4, waypoint4Guess);
-                self.moveElleNetpot(i, self.stepList(end,:), nextJointState);
+                nextJointState = self.model.ikcon(waypoint4, self.guesses{groupIndex}(4,:));
+                self = self.moveElleNetpot(netIndex, self.stepList(end,:), nextJointState, 5);
 
             end
 
-            % for j = 1:wSteps
-            %     if j==1
-            %         nextJointState = self.model.ikcon(waypoint{j}, initialGuesses{j});
-            %     else
-            %         nextJointState = self.model.ikcon(waypoint{j});
-            %     end
-            %     if j<=2
-            %         % nextJointState = self.model.ikine(waypoint{j},'mask',[1 1 1 1 1 0]);
-            %         self.moveElle(nextJointState);
-            %     end
-            %     if 2<j
-            %         % nextJointState = self.model.ikine(waypoint{j},'mask',[1 1 1 1 1 1]);
-            %         % nextJointState = self.model.ikcon(waypoint{j});
-            %         self.moveElleNetpot(steps,i,nextJointState);
-            %     end
-            %     % if 4<j
-            %     %     nextJointState = self.model.ikine(waypoint{j},'mask',[1 1 1 1 1 0]);
-            %     %     self.moveElle(nextJointState);
-            %     % end
-            % end
         end
 
-        function self =  moveElle(self,fromJointState, toJointState)
+        function self =  moveElle(self,fromJointState, toJointState, steps)
             currentJointState = fromJointState;
-            steps = 20;
-            % s = lspb(0,1,steps);
-            % qMatrix = nan(steps,6);
-            % for k = 1:steps
-            %     qMatrix(k,:) = (1-s(k))*currentJointState + s(k)*nextJointState;
-            % end
-            % x = zeros(6,steps);
-            %  for l = 1:steps-1
-            %      xdot = (x(:,l+1) - x(:,l))/deltaT;
-            %      J = self.model.jacob0(qMatrix(l,:));
-            %      J = J(1:2,:);
-            %      qdot = inv(J)*xdot;
-            %      qMatrix(l+1,:) =  qMatrix(l,:) + deltaT*qdot';
-            %  end
             qMatrix = jtraj(currentJointState,toJointState,steps);
             self.stepList = [self.stepList; qMatrix];
-            % for i = 1:steps
-            %     % self.netpot.netpotModel{i}.base = self.model.fkine(qMatrix(i,:)) * SE3(troty(pi/2));
-            %
-            %     self.model.animate(qMatrix(i,:));
-            %     drawnow();
-            %     pause(0.1);
-            % end
         end
 
-        function self =  moveElleNetpot(self,i,fromJointState,toJointState)
-            self.moveElle(fromJointState, toJointState);
+        function self =  moveElleNetpot(self,i,fromJointState,toJointState, steps)
+            self.moveElle(fromJointState, toJointState,steps);
             self.holdingObject = true;
             self.heldObject = self.netpot.netpotModel{i};
-            % s = lspb(0,1,steps);
-            % qMatrix = nan(steps,6);
-            % for k = 1:steps
-            %     qMatrix(k,:) = (1-s(k))*currentJointState + s(k)*nextJointState;
-            % end
-            % qSteps = 20;
-            % qMatrix = jtraj(currentJointState, toJointState,qSteps);
-            % x = zeros(6,steps);
-            %  for l = 1:steps-1
-            %      xdot = (x(:,l+1) - x(:,l))/deltaT;
-            %      J = self.model.jacob0(qMatrix(l,:));
-            %      J = J(1:2,:);
-            %      qdot = inv(J)*xdot;
-            %      qMatrix(l+1,:) =  qMatrix(l,:) + deltaT*qdot';
-            %  end
-            % Animate gripper and brick with end-effector
-            % for j = 1:steps
-            %     self.netpot.netpotModel{i}.base = self.model.fkine(qMatrix(j,:)) * SE3(troty(pi/2)) *SE3(trotx(-pi/2));
-            %
-            %     self.model.animate(qMatrix(j,:));
-            %     self.netpot.netpotModel{i}.animate(0);
-            %
-            %     drawnow();
-            %     pause(0.1);
-            % end
         end
     end
 end

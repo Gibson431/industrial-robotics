@@ -6,54 +6,98 @@ classdef NedAndElleApp < matlab.apps.AppBase
 
         LeftPanel  matlab.ui.container.Panel
         LeftGrid matlab.ui.container.GridLayout
-        Button matlab.ui.control.Button
-        LeftSlider1 CustomSlider
-        LeftSlider2 CustomSlider
-        LeftSlider3 CustomSlider
+        LeftPanelTitle matlab.ui.control.Label
+        LeftButtonGroup CustomXYZControl
+        LeftSliderGroup CustomJointControl
 
         CentrePanel matlab.ui.container.Panel
         CentreGrid matlab.ui.container.GridLayout
-        UIAxes matlab.ui.control.UIAxes
         EStopSwitch matlab.ui.control.Switch
         EStopSwitchLabel matlab.ui.control.Label
 
         RightPanel  matlab.ui.container.Panel
         RightGrid matlab.ui.container.GridLayout
-        RightSlider1 CustomSlider
-        RightSlider2 CustomSlider
-        RightSlider3 CustomSlider
+        RightPanelTitle matlab.ui.control.Label
+        RightButtonGroup CustomXYZControl
+        RightSliderGroup CustomJointControl
 
         NedRobot
         ElleRobot
+        environment;
+
     end
 
     properties (Access = private)
         onePanelWidth = 576;
         twoPanelWidth = 768;
         eStop = false;
-        environment;
+        stepsComplete = 0;
     end
     methods (Access = private)
-        function Slider1ValueChanged(app, event)
-            value = event.Value;
-            disp(value);
+        function LeftButtonPressed(app, event)
+            disp(event.Source.Text);
+            switch event.Source.Text
+                case 'X +'
+                    disp(['Left ', app.LeftButtonGroup.PX.Text])
+                case 'X -'
+                    disp(['Left ', app.LeftButtonGroup.NX.Text])
+                case 'Y +'
+                    disp(['Left ', app.LeftButtonGroup.PY.Text])
+                case 'Y -'
+                    disp(['Left ', app.LeftButtonGroup.NY.Text])
+                case 'Z +'
+                    disp(['Left ', app.LeftButtonGroup.PZ.Text])
+                case 'Z -'
+                    disp(['Left ', app.LeftButtonGroup.NZ.Text])
+            end
         end
 
-        function Slider2ValueChanged(app, event)
-            value = app.LeftSlider2.Slider.Value;
-            disp(event);
+        function RightButtonPressed(app, event)
+            disp(event.Source.Text);
+            switch event.Source.Text
+                case 'X +'
+                    disp(['Right ', app.RightButtonGroup.PX.Text])
+                case 'X -'
+                    disp(['Right ', app.RightButtonGroup.NX.Text])
+                case 'Y +'
+                    disp(['Right ', app.RightButtonGroup.PY.Text])
+                case 'Y -'
+                    disp(['Right ', app.RightButtonGroup.NY.Text])
+                case 'Z +'
+                    disp(['Right ', app.RightButtonGroup.PZ.Text])
+                case 'Z -'
+                    disp(['Right ', app.RightButtonGroup.NZ.Text])
+            end
         end
 
-        function Slider3ValueChanged(app, event)
-            value = app.LeftSlider3.Slider.Value;
-            disp(event);
+        function LeftSlidersMoved(app, ~)
+            L0 = app.LeftSliderGroup.Link0.Value;
+            L1 = app.LeftSliderGroup.Link1.Value;
+            L2 = app.LeftSliderGroup.Link2.Value;
+            L3 = app.LeftSliderGroup.Link3.Value;
+            L4 = app.LeftSliderGroup.Link4.Value;
+            L5 = app.LeftSliderGroup.Link5.Value;
+            app.LeftSliderGroup.Link0
+            qVals = deg2rad([L0 L1 L2 L3 L4 L5]);
+            app.NedRobot.jog(qVals);
+        end
+
+        function RightSlidersMoved(app, ~)
+            L0 = app.RightSliderGroup.Link0.Value;
+            L1 = app.RightSliderGroup.Link1.Value;
+            L2 = app.RightSliderGroup.Link2.Value;
+            L3 = app.RightSliderGroup.Link3.Value;
+            L4 = app.RightSliderGroup.Link4.Value;
+            L5 = app.RightSliderGroup.Link5.Value;
+            qVals = deg2rad([L0 L1 L2 L3 L4 L5]);
+            app.ElleRobot.jog(qVals);
         end
 
         function EStopValueChanged(app, event)
             app.eStop = event.Value;
         end
 
-        function updateAppLayout(app, event)
+        function updateAppLayout(app, ~)
             currentFigureWidth = app.UIFigure.Position(3);
             if(currentFigureWidth <= app.onePanelWidth)
 
@@ -81,7 +125,7 @@ classdef NedAndElleApp < matlab.apps.AppBase
 
                 % Change to a 1x3 grid
                 app.GridLayout.RowHeight = {'1x'};
-                app.GridLayout.ColumnWidth = {'1x','2x','1x'};
+                app.GridLayout.ColumnWidth = {'2x','1x','2x'};
                 app.LeftPanel.Layout.Row = 1;
                 app.LeftPanel.Layout.Column = 1;
                 app.CentrePanel.Layout.Row = 1;
@@ -101,14 +145,14 @@ classdef NedAndElleApp < matlab.apps.AppBase
             % Create UIFigure and hide until all components are created
             app.UIFigure = uifigure('Visible','off');
             app.UIFigure.AutoResizeChildren = 'off';
-            app.UIFigure.Position = [100 100 860 480];
+            app.UIFigure.Position = [100 100 1000 540];
             app.UIFigure.Name = 'Ned and Elle App';
             app.UIFigure.SizeChangedFcn = createCallbackFcn(app, @updateAppLayout, true);
 
             % Create grid layout
             app.GridLayout = uigridlayout(app.UIFigure);
-            app.GridLayout.ColumnWidth = {220, '1x', 220};
-            app.GridLayout.RowHeight = {'2x'};
+            app.GridLayout.ColumnWidth = {'1x', '1x', '1x'};
+            app.GridLayout.RowHeight = {'1x'};
             app.GridLayout.ColumnSpacing = 0;
             app.GridLayout.RowSpacing = 0;
             app.GridLayout.Padding = [0 0 0 0];
@@ -121,29 +165,42 @@ classdef NedAndElleApp < matlab.apps.AppBase
 
             % Create LeftGrid
             app.LeftGrid = uigridlayout(app.LeftPanel);
-            app.LeftGrid.ColumnWidth = {'1x', '2x'};
-            app.LeftGrid.RowHeight = {'1x','1x','1x','3x'};
+            app.LeftGrid.ColumnWidth = {'1x'};
+            app.LeftGrid.RowHeight = {'1x', '3x','6x'};
             app.LeftGrid.ColumnSpacing = 2.5;
-            app.LeftGrid.Padding = [10 10 10 10];
+            app.LeftGrid.Padding = [5 5 5 5];
 
-            % Create CustomSlider1
-            app.LeftSlider1 = CustomSlider(app.LeftGrid);
-            app.LeftSlider1.Label.Text = 'Slider';
-            app.LeftSlider1.Slider.ValueChangedFcn = createCallbackFcn(app, @Slider1ValueChanged, true);
+            % Create LeftPanelTitle
+            app.LeftPanelTitle = uilabel(app.LeftGrid);
+            app.LeftPanelTitle.Text = 'Ned Robot';
+            app.LeftPanelTitle.Layout.Column = 1;
+            app.LeftPanelTitle.Layout.Row = 1;
+            app.LeftPanelTitle.HorizontalAlignment = 'center';
 
-            % Create CustomSlider2
-            app.LeftSlider2 = CustomSlider(app.LeftGrid);
-            app.LeftSlider2.Label.Text = 'Slider';
-            app.LeftSlider2.Slider.ValueChangedFcn = createCallbackFcn(app, @Slider2ValueChanged, true);
+            % Create LeftButtonGroup
+            app.LeftButtonGroup = CustomXYZControl(app.LeftGrid, app);
+            app.LeftButtonGroup.GridLayout.Layout.Column = 1;
+            app.LeftButtonGroup.GridLayout.Layout.Row = 2;
+            app.LeftButtonGroup.PX.ButtonPushedFcn = createCallbackFcn(app, @LeftButtonPressed, true);
+            app.LeftButtonGroup.NX.ButtonPushedFcn = createCallbackFcn(app, @LeftButtonPressed, true);
+            app.LeftButtonGroup.PY.ButtonPushedFcn = createCallbackFcn(app, @LeftButtonPressed, true);
+            app.LeftButtonGroup.NY.ButtonPushedFcn = createCallbackFcn(app, @LeftButtonPressed, true);
+            app.LeftButtonGroup.PZ.ButtonPushedFcn = createCallbackFcn(app, @LeftButtonPressed, true);
+            app.LeftButtonGroup.NZ.ButtonPushedFcn = createCallbackFcn(app, @LeftButtonPressed, true);
 
-            % Create CustomSlider3
-            app.LeftSlider3 = CustomSlider(app.LeftGrid);
-            app.LeftSlider3.Label.Text = 'Slider';
-            app.LeftSlider3.Slider.ValueChangedFcn = createCallbackFcn(app, @Slider3ValueChanged, true);
+            % Create LeftSliderGroup
+            app.LeftSliderGroup = CustomJointControl(app.LeftGrid);
+            app.LeftSliderGroup.GridLayout.Layout.Column = 1;
+            app.LeftSliderGroup.GridLayout.Layout.Row = 3;
+            app.LeftSliderGroup.Link0.ValueChangedFcn = createCallbackFcn(app, @LeftSlidersMoved, true);
+            app.LeftSliderGroup.Link1.ValueChangedFcn = createCallbackFcn(app, @LeftSlidersMoved, true);
+            app.LeftSliderGroup.Link2.ValueChangedFcn = createCallbackFcn(app, @LeftSlidersMoved, true);
+            app.LeftSliderGroup.Link3.ValueChangedFcn = createCallbackFcn(app, @LeftSlidersMoved, true);
+            app.LeftSliderGroup.Link4.ValueChangedFcn = createCallbackFcn(app, @LeftSlidersMoved, true);
+            app.LeftSliderGroup.Link5.ValueChangedFcn = createCallbackFcn(app, @LeftSlidersMoved, true);
+            app.LeftSliderGroup.Link5.ValueChangedFcn = createCallbackFcn(app, @LeftSlidersMoved, true);
 
-            % Create Button
-            % app.Button = uibutton(app.LeftGrid, 'push');
-            % app.Button.Position = [60 219 100 3];
+
 
             % Create CentrePanel
             app.CentrePanel = uipanel(app.GridLayout);
@@ -156,35 +213,20 @@ classdef NedAndElleApp < matlab.apps.AppBase
             app.CentreGrid.RowHeight = {'7x','1x','1x'};
             app.CentreGrid.Padding = [10 10 10 10];
 
-
-            % Create UIAxes
-            % app.UIAxes = uiaxes(app.CentreGrid);
-            % view(app.UIAxes, [1 1 1]);
-            % axis(app.UIAxes, 'tight');
-            % grid(app.UIAxes, "on");
-            % hold(app.UIAxes, "on");
-            % title(app.UIAxes, 'Title');
-            % app.UIAxes.Layout.Row = 1;
-            % app.UIAxes.Layout.Column = 1;
-
-            % axes(app.UIAxes);
-            % xlabel(app.UIAxes, 'X');
-
             % Create EStopSwitchLabel
             app.EStopSwitchLabel = uilabel(app.CentreGrid);
             app.EStopSwitchLabel.Text = 'E-Stop';
             app.EStopSwitchLabel.HorizontalAlignment = 'center';
-            % app.EStopSwitchLabel.Position = [0 0 40 22];
             app.EStopSwitchLabel.Layout.Row = 2;
             app.EStopSwitchLabel.Layout.Column = 1;
 
             % Create EStopSwitch
             app.EStopSwitch = uiswitch(app.CentreGrid, 'slider');
-            % app.EStopSwitch.HorizontalAlignment = 'center';
-            % app.EStopSwitch.Position = [0 0 45 20];
             app.EStopSwitch.Layout.Row = 3;
             app.EStopSwitch.Layout.Column = 1;
             app.EStopSwitch.ValueChangedFcn = createCallbackFcn(app, @EStopValueChanged, true);
+
+
 
             % Create RightPanel
             app.RightPanel = uipanel(app.GridLayout);
@@ -193,99 +235,67 @@ classdef NedAndElleApp < matlab.apps.AppBase
 
             % Create RightGrid
             app.RightGrid = uigridlayout(app.RightPanel);
-            app.RightGrid.ColumnWidth = {'1x', '2x'};
-            app.RightGrid.RowHeight = {'1x','1x','1x','3x'};
+            app.RightGrid.ColumnWidth = {'1x'};
+            app.RightGrid.RowHeight = {'1x','3x', '6x'};
             app.RightGrid.ColumnSpacing = 2.5;
-            app.RightGrid.Padding = [10 10 10 10];
+            app.RightGrid.Padding = [5 5 5 5];
 
-            % Create CustomSlider1
-            app.RightSlider1 = CustomSlider(app.RightGrid);
-            app.RightSlider1.Label.Text = 'Slider';
-            app.RightSlider1.Slider.ValueChangedFcn = createCallbackFcn(app, @Slider1ValueChanged, true);
+            % Create RightPanelTitle
+            app.RightPanelTitle = uilabel(app.RightGrid);
+            app.RightPanelTitle.Text = 'Elle Robot';
+            app.RightPanelTitle.Layout.Column = 1;
+            app.RightPanelTitle.Layout.Row = 1;
+            app.RightPanelTitle.HorizontalAlignment = 'center';
 
-            % Create CustomSlider2
-            app.RightSlider2 = CustomSlider(app.RightGrid);
-            app.RightSlider2.Label.Text = 'Slider';
-            app.RightSlider2.Slider.ValueChangedFcn = createCallbackFcn(app, @Slider2ValueChanged, true);
+            % Create RightButtonGroup
+            app.RightButtonGroup = CustomXYZControl(app.RightGrid, app);
+            app.RightButtonGroup.GridLayout.Layout.Column = 1;
+            app.RightButtonGroup.GridLayout.Layout.Row = 2;
+            app.RightButtonGroup.PX.ButtonPushedFcn = createCallbackFcn(app, @RightButtonPressed, true);
+            app.RightButtonGroup.NX.ButtonPushedFcn = createCallbackFcn(app, @RightButtonPressed, true);
+            app.RightButtonGroup.PY.ButtonPushedFcn = createCallbackFcn(app, @RightButtonPressed, true);
+            app.RightButtonGroup.NY.ButtonPushedFcn = createCallbackFcn(app, @RightButtonPressed, true);
+            app.RightButtonGroup.PZ.ButtonPushedFcn = createCallbackFcn(app, @RightButtonPressed, true);
+            app.RightButtonGroup.NZ.ButtonPushedFcn = createCallbackFcn(app, @RightButtonPressed, true);
 
-            % Create CustomSlider3
-            app.RightSlider3 = CustomSlider(app.RightGrid);
-            app.RightSlider3.Label.Text = 'Slider';
-            app.RightSlider3.Slider.ValueChangedFcn = createCallbackFcn(app, @Slider3ValueChanged, true);
+            % Create RightSliderGroup
+            app.RightSliderGroup = CustomJointControl(app.RightGrid);
+            app.RightSliderGroup.GridLayout.Layout.Column = 1;
+            app.RightSliderGroup.GridLayout.Layout.Row = 3;
+            app.RightSliderGroup.Link0.ValueChangedFcn = createCallbackFcn(app, @RightSlidersMoved, true);
+            app.RightSliderGroup.Link1.ValueChangedFcn = createCallbackFcn(app, @RightSlidersMoved, true);
+            app.RightSliderGroup.Link2.ValueChangedFcn = createCallbackFcn(app, @RightSlidersMoved, true);
+            app.RightSliderGroup.Link3.ValueChangedFcn = createCallbackFcn(app, @RightSlidersMoved, true);
+            app.RightSliderGroup.Link4.ValueChangedFcn = createCallbackFcn(app, @RightSlidersMoved, true);
+            app.RightSliderGroup.Link5.ValueChangedFcn = createCallbackFcn(app, @RightSlidersMoved, true);
 
             % Show the figure after all components are created
             app.UIFigure.Visible = 'on';
 
         end
 
-        function app = createEnvironment(app)
-            origin = SE3(transl(0,0,0));
-            hold on;
-            % app.NedRobot = Ned(origin.T * transl(0.5,-0.25,0));
-            app.ElleRobot = Elle(origin.T * transl(-0.5,-0.25,0));
 
-            x_pos = origin.t(1);
-            y_pos = origin.t(2);
-            z_pos = origin.t(3);
-            
-            surface = surf([-2.5,-2.5;+1.5,+1.5] ,[-3.5,+0.4;-3.5,+0.4] ,[z_pos-0.95,z_pos-0.95;...
-                z_pos-0.95,z_pos-0.95],'CData',imread('concrete.jpg'),'FaceColor','texturemap');
-            app.environment = [app.environment, surface];
-
-
-            flats = PlaceObject("2_Flats.ply",[x_pos-0.3,y_pos,z_pos]);
-            rotate(flats, [0,0,1], 90, [0,0,0]);
-            app.environment = [app.environment, flats];
-
-            table = PlaceObject("table.ply",[x_pos-0.65,y_pos+0.85,z_pos-0.95]);
-            rotate(table, [0,0,1], 90, [0,0,0]);
-            app.environment = [app.environment, table];
-
-            app.environment = [app.environment, PlaceObject("table.ply",[x_pos+0.4,y_pos+0.4,z_pos-0.95])];
-
-            app.environment = [app.environment, PlaceObject("Security_Fence.ply",[x_pos-2,y_pos-2,z_pos-0.95])];
-            app.environment = [app.environment, PlaceObject("Security_Fence.ply",[x_pos,y_pos-2,z_pos-0.95])];
-
-            app.environment = [app.environment, PlaceObject("wall.ply",[x_pos-0.8,y_pos+0.4,z_pos])];
-            wall = PlaceObject("wall.ply",[x_pos-1.9,y_pos-1.5,z_pos]);
-            rotate(wall, [0,0,1], 90, [0,0,0]);
-            app.environment = [app.environment, wall];
-
-            security_cam = PlaceObject("SecurityCam.ply",[x_pos+1.2,y_pos-0.4,z_pos+0.8]);
-            rotate(security_cam, [0,0,1], 180, [0,0,0]);
-            app.environment = [app.environment, security_cam];
-
-            e_stop = PlaceObject("e-stop.ply",[x_pos-2,y_pos+0.3,z_pos-0.4]);
-            rotate(e_stop, [1,0,0], 90, [0,0,0]);
-            app.environment = [app.environment, e_stop];
-
-            person = PlaceObject("person.ply",[x_pos-0.3,y_pos+1.6,z_pos-0.95]);
-            rotate(person, [0,0,1], 135, [0,0,0]);
-            app.environment = [app.environment, person];
-
-            app.environment = [app.environment, PlaceObject("FireExtinguisher.ply",[x_pos+0.9,y_pos-1.5,z_pos-0.95])];
-
-        end
     end
 
     % App creation and deletion
     methods (Access = public)
         function app = NedAndElleApp
-
+            close all;
             % Create UIFigure and components
-            creatComponents(app)
+            creatComponents(app);
 
 
             % Register the app with App Designer
-            registerApp(app, app.UIFigure)
+            registerApp(app, app.UIFigure);
 
 
             % Create Environment
-            % pause(5);
-            app.createEnvironment();
+            origin = SE3(transl(0,0,0));
+            app = CreateAppEnvironment(app, origin);
 
             app.processLoop();
-            
+            disp('process loop commented out');
+
             if nargout == 0
                 clear app
             end
@@ -300,10 +310,13 @@ classdef NedAndElleApp < matlab.apps.AppBase
 
         function app = processLoop(app)
             while (true)
-                disp(app.environment);
                 if (app.EStopSwitch.Value == "Off")
-                    % app.NedRobot.doStep();
+                    app.stepsComplete = app.stepsComplete + 1;
                     app.ElleRobot.doStep();
+                    if (app.stepsComplete >= 40)
+                        app.NedRobot.doStep();
+                    end
+                    pause(0.2);
                 else
                     pause(0.1);
                 end
