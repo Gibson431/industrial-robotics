@@ -8,29 +8,27 @@ classdef Elle < CustomUR3
         heldObject;
         routeCount = 1;
         guesses = {[
-            -0.7540   -0.2513   -1.1310   -1.7593    1.5080         0
-            2.0106   -0.7540    2.0106   -1.2566    2.0106         0
-            -1.6336   -1.2566    1.2566   -1.5080   -1.5080         0
-            -2.2619   -1.2566    2.2619   -2.6389   -1.5080         0
+            -1.5708   -0.7854   -1.5708   -0.7854    1.5708    0.0000
+            -1.5708   -0.7854   -1.5708   -0.7854    1.5708    0.0000
+            -1.5708    0.7854    1.5708   -2.3562   -1.5708         0
+            -1.5708    0.7854    1.5708   -2.3562   -1.5708         0
             ],[
-            -1.1310   -0.2513   -1.1310   -1.7593    1.5080         0
-            1.5080   -1.0053    2.3876   -1.3823    1.5080         0
-            -1.6336   -1.2566    1.2566   -1.5080   -1.5080         0
-            -2.2619   -1.2566    2.2619   -2.6389   -1.5080         0
+            -1.5708   -0.7854   -1.5708-0.7854   -0.7854    1.5708    0.0000
+            -1.5708   -0.7854   -1.5708-0.7854   -0.7854    1.5708    0.0000
+            -1.5708    0.7854    1.5708   -2.3562   -1.5708         0
+            -1.5708    0.7854    1.5708   -2.3562   -1.5708         0
             ],[
-            -0.8796   -0.2513   -1.1310   -1.7593    1.5080         0
-            1.1310   -1.0053    2.3876   -1.3823    1.2566         0
-            -1.6336   -1.2566    1.2566   -1.5080   -1.5080         0
-            -2.2619   -1.0053    2.0106   -2.6389   -1.5080         0
+            -1.5708   -0.7854   -1.5708-0.7854   -0.7854    1.5708    0.0000
+            -1.5708   -0.7854   -1.5708-0.7854   -0.7854    1.5708    0.0000
+            -1.5708    0.7854    1.5708   -2.3562   -1.5708         0
+            -1.5708    0.7854    1.5708   -2.3562   -1.5708         0
             ],[
-            -0.7540   -0.2513   -1.1310   -1.7593    1.5080         0
-            0.5027   -1.0053    2.3876   -1.3823    0.5027         0
-            -1.6336   -1.2566    1.2566   -1.5080   -1.5080         0
-            -2.2619   -1.0053    2.0106   -2.6389   -1.5080         0
+            -1.5708+0.7854   -0.7854   -1.5708   -0.7854    1.5708    0.0000
+            -1.5708+0.7854   -0.7854   -1.5708   -0.7854    1.5708    0.0000
+            -1.5708    0.7854    1.5708   -2.3562   -1.5708         0
+            -1.5708    0.7854    1.5708   -2.3562   -1.5708         0
             ]};
         gripperOffset = SE3(transl(0,0,0.05));
-
-
 
     end
     methods
@@ -40,17 +38,13 @@ classdef Elle < CustomUR3
             if nargin ~= 0
                 baseTr = tr;
             end
-            self.model.base = baseTr * transl(1.5,0,0);
+            self.model.base = baseTr * transl(1.5,-0.05,0);
             self.model.animate([0 0 0 0 0 pi/2]);
             self.netpot = RobotNetpots(self.netpotCount);
         end
 
         %% Move Robot
-
-
         function self = doStep(self)
-            % disp("step list length top: ");
-            % disp(length(self.stepList));
             if ~isempty(self.stepList)
                 self.jog(self.stepList(1,:));
 
@@ -77,7 +71,7 @@ classdef Elle < CustomUR3
         function self = jog(self, qVals)
             self.model.animate(qVals);
             if (self.holdingObject)
-                self.heldObject.base = self.model.fkine(qVals)*self.gripperOffset;
+                self.heldObject.base = self.model.fkine(qVals)*self.gripperOffset*SE3(trotx(pi/2));
                 self.heldObject.animate(0);
             end
         end
@@ -94,15 +88,16 @@ classdef Elle < CustomUR3
         end
 
         function self = calcNextRoute(self)
-            steps = length(self.netpot.netpotModel);
+            currentJointState = self.model.getpos();
 
+            if self.routeCount > 32
+                self = self.moveElle(currentJointState, [0 0 0 0 0 0], 20);
+                return
+            end
             if mod(self.routeCount, 2) == 1
                 currentJointState = self.model.getpos();
 
-                if self.routeCount >= 31
-                    self = self.moveElle(currentJointState, [0 0 0 0 0 0], 20);
 
-                end
                 netIndex = floor(self.routeCount/2)+1;
                 bTr = self.netpot.netpotModel{netIndex}.base;
 
@@ -110,8 +105,8 @@ classdef Elle < CustomUR3
                 by_pos = bTr.t(2);
                 bz_pos = bTr.t(3);
 
-                waypoint1 = transl(bx_pos,by_pos + 0.2, bz_pos + 0.01) * trotx(-pi/2) * trotz(pi) * troty(pi);
-                waypoint2 = transl(bx_pos,by_pos + 0.05,bz_pos + 0.01) * trotx(-pi/2) * trotz(pi) * troty(pi);
+                waypoint1 = SE3(transl(bx_pos,by_pos, bz_pos + 0.2)*trotx(pi))*inv(self.gripperOffset);
+                waypoint2 = SE3(transl(bx_pos,by_pos,bz_pos + 0.01)*trotx(pi))*inv(self.gripperOffset);
 
                 groupIndex = floor((netIndex-1)/4)+1;
                 nextJointState = self.model.ikcon(waypoint1, self.guesses{groupIndex}(1,:));
@@ -122,39 +117,16 @@ classdef Elle < CustomUR3
 
             else
                 currentJointState = self.model.getpos();
-                % waypoint3 = transl(1.27,0.2+(i-1)*0.7,0.2)*trotx(-pi/2);
-                % waypoint4 = transl(1.27,0.2+(i-1)*0.7,0.05)*trotx(-pi/2);
-                netIndex = floor(self.routeCount/2)
+                netIndex = floor(self.routeCount/2);
                 groupIndex = floor((netIndex-1)/4)+1;
-                isEven = mod(groupIndex, 2)
+                isEven = mod(groupIndex, 2);
                 rowIndex = mod(netIndex-1, 4);
-                % guess = 0;
-                % if netIndex <= 4
-                %     waypoint3 = transl(1.27,0.2+(netIndex-1)*0.07,0.2)*trotx(-pi/2);
-                %     waypoint4 = transl(1.27,0.2+(netIndex-1)*0.07,0.05)*trotx(-pi/2);
-                % end
-                % 
-                % if 4 < netIndex
-                %     waypoint3 = transl(0.28,1.82+(netIndex-5)*0.14,0.5) * trotx(-pi);
-                %     waypoint4 = transl(0.28,1.82+(netIndex-5)*0.14,0.2) * trotx(-pi);
-                % end
-                % 
-                % if 8 < netIndex
-                %     waypoint3 = transl(0.35,1.75+(netIndex-9)*0.14,0.5) * trotx(-pi);
-                %     waypoint4 = transl(0.35,1.75+(netIndex-9)*0.14,0.2) * trotx(-pi);
-                % end
-                % 
-                % if 12 < netIndex
-                %     waypoint3 = transl(0.42,1.82+(netIndex-13)*0.14,0.5) * trotx(-pi);
-                %     waypoint4 = transl(0.42,1.82+(netIndex-13)*0.14,0.2) * trotx(-pi);
-                % end
-                % currentJointState = self.model.getpos;
 
                 xPos = 1.75-(rowIndex)*0.14-isEven*0.07;
                 yPos = 0.21+(groupIndex-1)*0.07;
 
-                waypoint3 = SE3(transl(xPos,yPos,0.2) * trotx(-pi/2))*inv(self.gripperOffset);
-                waypoint4 = SE3(transl(xPos,yPos,0.05) * trotx(-pi/2))*inv(self.gripperOffset);
+                waypoint3 = SE3(transl(xPos,yPos,0.2)*trotx(pi)) * inv(self.gripperOffset);
+                waypoint4 = SE3(transl(xPos,yPos,0.05)*trotx(pi)) * inv(self.gripperOffset);
 
                 nextJointState = self.model.ikcon(waypoint3, self.guesses{groupIndex}(3,:));
                 self = self.moveElleNetpot(netIndex, currentJointState, nextJointState, 20);
@@ -168,7 +140,6 @@ classdef Elle < CustomUR3
 
         function self =  moveElle(self,fromJointState, toJointState, steps)
             currentJointState = fromJointState;
-            % steps = 20;
             qMatrix = jtraj(currentJointState,toJointState,steps);
             self.stepList = [self.stepList; qMatrix];
         end
