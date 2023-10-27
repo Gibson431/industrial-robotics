@@ -106,10 +106,10 @@ classdef Ned < omronTM5
 
                 groupIndex = floor(elleIndex/4)+1;
                 nextJointState = self.model.ikcon(waypoint1, guesses{groupIndex}(1,:));
-                self = self.moveNed(currentJointState, nextJointState);
+                self = self.moveNed(currentJointState, nextJointState, 20);
 
                 nextJointState = self.model.ikcon(waypoint2, guesses{groupIndex}(2,:));
-                self = self.moveNed(self.stepList(end,:), nextJointState);
+                self = self.moveNed(self.stepList(end,:), nextJointState, 5);
 
             else
                 i = floor(self.routeCount/2);
@@ -160,22 +160,22 @@ classdef Ned < omronTM5
                 elleIndex = floor(self.routeCount/2)+1;
                 groupIndex = floor(elleIndex/4)+1;
                 nextJointState = self.model.ikcon(waypoint3, guesses{groupIndex}(3,:));
-                self = self.moveNedSubstrate(i, currentJointState, nextJointState);
+                self = self.moveNedSubstrate(i, currentJointState, nextJointState, 20);
 
                 nextJointState = self.model.ikcon(waypoint4, guesses{groupIndex}(4,:));
-                self = self.moveNedSubstrate(i, self.stepList(end,:), nextJointState);
+                self = self.moveNedSubstrate(i, self.stepList(end,:), nextJointState, 5);
             end
         end
 
-        function self = moveNed(self,fromJointState, toJointState)
+        function self = moveNed(self,fromJointState, toJointState, steps)
             currentJointState = fromJointState;
-            steps = 20;
+            % steps = 20;
             qMatrix = jtraj(currentJointState,toJointState,steps);
             self.stepList = [self.stepList; qMatrix];
         end
 
-        function self = moveNedSubstrate(self,i,fromJointState, toJointState)
-            self = self.moveNed(fromJointState, toJointState);
+        function self = moveNedSubstrate(self,i,fromJointState, toJointState, steps)
+            self = self.moveNed(fromJointState, toJointState, steps);
             self.holdingObject = true;
             self.heldObject = self.substrate.substrateModel{i};
         end
