@@ -2,54 +2,58 @@ classdef RobotSubstrate < handle
     %ROBOTCOWS A class that creates a herd of robot cows
     %   The cows can be moved around randomly. It is then possible to query
     %   the current location (base) of the cows
-
+    
     properties (Constant)
         %> Max height is for plotting of the workspace
         maxHeight = 10;
     end
-
+    
     properties
         %> Number of bricks
         substrateCount = 16;
-
+        
         %> A cell structure of \c cowCount cow models
         substrateModel;
-
+        
         %> paddockSize in meters
         paddockSize = [2,2];
-
+        
         %> Dimensions of the workspace in regard to the padoc size
         workspaceDimensions;
     end
-
+    
     methods
         %% ...structors
         function self = RobotSubstrate(substrateCount)
             self.workspaceDimensions = [-self.paddockSize(1)/2, self.paddockSize(1)/2 ...
                 ,-self.paddockSize(2)/2, self.paddockSize(2)/2 ...
                 ,0,self.maxHeight];
-
+            
             steps = substrateCount;
             for i = 1:steps
                 self.substrateModel{i} = self.GetBrickModel(['Substrate',num2str(i)]);
-
-                if i < 9
-                    self.substrateModel{i}.base = SE3(transl(0.1+i*0.05, 0.25,0.04)) * SE3(trotx(pi/2)) ;
+                
+                if i < 5
+                    self.substrateModel{i}.base = SE3(transl(0.5-(i-1)*0.05, 0.25,0.04)) * SE3(trotx(pi/2)) ;
                 end
-
-                        %(-0.2+i*0.05, 0.25,0.04)
-                        %(0.55,-0.3+i*0.05,0.04)
-                        
-                if  9 <= i
-                    self.substrateModel{i}.base = SE3(transl(0.1+(i-8)*0.05,0.2,0.04)) * SE3(trotx(pi/2)) ;
-
+                
+                if 5 <= i
+                    self.substrateModel{i}.base = SE3(transl(0.5-(i-5)*0.05, 0.2,0.04)) * SE3(trotx(pi/2)) ;
                 end
-                        %(-0.2+(i-8)*0.05,0.2,0.04)
-                        %(0.6,-0.3+(i-8)*0.05,0.04)
-
+                
+                if 8 < i
+                    self.substrateModel{i}.base = SE3(transl(0.5-(i-9)*0.05, 0.15,0.04)) * SE3(trotx(pi/2)) ;
+                end
+                
+                if 12 < i
+                    self.substrateModel{i}.base = SE3(transl(0.5-(i-13)*0.05,0.1,0.04)) * SE3(trotx(pi/2)) ;
+                    
+                end
+               
+                
                 % Plot 3D model
                 plot3d(self.substrateModel{i},0,'workspace',self.workspaceDimensions,'view',[-30,30],'delay',0,'noarrow','nowrist','notiles');
-
+                
                 % Hold on after the first plot (if already on there's no difference)
                 if i == 1
                     hold on;
@@ -62,7 +66,7 @@ classdef RobotSubstrate < handle
                 camlight
             end
         end
-
+        
         %% TestPlotManyStep
         % Go through and plot many random walk steps
         function TestPlotManyStep(self,numSteps,delay)
@@ -78,7 +82,7 @@ classdef RobotSubstrate < handle
             end
         end
     end
-
+    
     methods (Static)
         %% GetBrickModel
         function model = GetBrickModel(name)
@@ -88,12 +92,12 @@ classdef RobotSubstrate < handle
             [faceData,vertexData] = plyread('30mm_Substrate.ply','tri');
             link1 = Link('alpha',pi/2,'a',0,'d',0,'offset',0);
             model = SerialLink(link1,'name',name);
-
+            
             % Changing order of cell array from {faceData, []} to
             % {[], faceData} so that data is attributed to Link 1
             % in plot3d rather than Link 0 (base).
             model.faces = {[], faceData};
-
+            
             % Changing order of cell array from {vertexData, []} to
             % {[], vertexData} so that data is attributed to Link 1
             % in plot3d rather than Link 0 (base).
