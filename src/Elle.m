@@ -71,6 +71,17 @@ classdef Elle < CustomUR3
             end
         end
 
+        function self = rmrc(self)
+            deltaT = 0.05;                                                              % Discrete time step
+
+            minManipMeasure = 0.1;
+            steps = 100;
+            deltaTheta = 2*pi/steps;
+            x = [];
+
+
+        end
+
         function self = calcNextRoute(self)
             steps = length(self.netpot.netpotModel);
             initialGuess = [
