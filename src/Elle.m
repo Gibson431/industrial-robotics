@@ -7,40 +7,34 @@ classdef Elle < CustomUR3
         holdingObject = false;
         heldObject;
         routeCount = 1;
-        
-        group1Guess = [
+        guesses = {[
             -0.7540   -0.2513   -1.1310   -1.7593    1.5080         0
             2.0106   -0.7540    2.0106   -1.2566    2.0106         0
             -1.6336   -1.2566    1.2566   -1.5080   -1.5080         0
             -2.2619   -1.2566    2.2619   -2.6389   -1.5080         0
-            ]
-        
-        group2Guess = [
+            ],[
             -1.1310   -0.2513   -1.1310   -1.7593    1.5080         0
             1.5080   -1.0053    2.3876   -1.3823    1.5080         0
             -1.6336   -1.2566    1.2566   -1.5080   -1.5080         0
             -2.2619   -1.2566    2.2619   -2.6389   -1.5080         0
-            ]
-        
-        group3Guess = [
+            ],[
             -0.8796   -0.2513   -1.1310   -1.7593    1.5080         0
             1.1310   -1.0053    2.3876   -1.3823    1.2566         0
             -1.6336   -1.2566    1.2566   -1.5080   -1.5080         0
             -2.2619   -1.0053    2.0106   -2.6389   -1.5080         0
-            
-        group4Guess = [
+            ],[
             -0.7540   -0.2513   -1.1310   -1.7593    1.5080         0
             0.5027   -1.0053    2.3876   -1.3823    0.5027         0
             -1.6336   -1.2566    1.2566   -1.5080   -1.5080         0
             -2.2619   -1.0053    2.0106   -2.6389   -1.5080         0
-            ]
-            
+            ]}
+        
 
-           
+            
     end
     methods
         function self = Elle(tr)
-            
+
             baseTr = eye(4);
             if nargin ~= 0
                 baseTr = tr;
@@ -118,10 +112,10 @@ classdef Elle < CustomUR3
                 
                 currentJointState = self.model.getpos;
                 
-                nextJointState = self.model.ikcon(waypoint1);
+                nextJointState = self.model.ikcon(waypoint1, self.guesses{groupIndex}(1,:));
                 self = self.moveElle(currentJointState, nextJointState);
                 
-                nextJointState = self.model.ikcon(waypoint2);
+                nextJointState = self.model.ikcon(waypoint2, self.guesses{groupIndex}(2,:));
                 self = self.moveElle(self.stepList(end,:), nextJointState);
                 
             else
@@ -178,11 +172,11 @@ classdef Elle < CustomUR3
                 end
                 currentJointState = self.model.getpos;
                 
-                nextJointState = self.model.ikcon(waypoint3);
-                self = self.moveElleNetpot(i, currentJointState, nextJointState);
+                nextJointState = self.model.ikcon(waypoint3, self.guesses{groupIndex}(3,:));
+                self = self.moveElleNetpot(i, currentJointState, nextJointState, 20);
                 
-                nextJointState = self.model.ikcon(waypoint4);
-                self = self.moveElleNetpot(i, self.stepList(end,:), nextJointState);
+                nextJointState = self.model.ikcon(waypoint4, self.guesses{groupIndex}(4,:));
+                self = self.moveElleNetpot(i, self.stepList(end,:), nextJointState, 5);
                 
             end
             
