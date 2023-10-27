@@ -1,4 +1,4 @@
-classdef Elle < UR3
+classdef Elle < CustomUR3
     properties
         netpot;
         netpotCount = 16;
@@ -16,7 +16,7 @@ classdef Elle < UR3
                 baseTr = tr;
             end
             self.model.base = baseTr * transl(1.5,0,0);
-            self.model.animate([0 -pi/2 0 0 0 pi/2]);
+            self.model.animate([0 0 0 0 0 pi/2]);
             self.netpot = RobotNetpots(self.netpotCount);
         end
 
