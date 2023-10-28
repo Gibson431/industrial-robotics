@@ -1,6 +1,5 @@
 classdef Ned < omronTM5
     properties
-        % robot;
         substrate;
         substrateCount = 16;
         substrateIndex = 0;
@@ -84,19 +83,14 @@ classdef Ned < omronTM5
         end
         
         function self = calcNextRoute(self)
-            
-            disp('recalc');
-            % steps = length(self.substrate.substrateModel);
-            
-            
-            
+            currentJointState = self.model.getpos();
+
+            if self.routeCount > 32
+                self = self.moveNed(currentJointState, [0 0 0 0 0 0], self.macroStep);
+                return
+            end
             if mod(self.routeCount, 2) == 1
-                currentJointState = self.model.getpos();
-                
-                if self.routeCount > 32
-                    self = self.moveNed(currentJointState, [0 0 0 0 0 0], 3);
-                    
-                end
+    
                 elleIndex = floor(self.routeCount/2)+1;
                 bTr = self.substrate.substrateModel{elleIndex}.base;
                 
