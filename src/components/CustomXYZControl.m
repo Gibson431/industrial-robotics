@@ -43,7 +43,7 @@ classdef CustomXYZControl
             self.NZ = uibutton(self.GridLayout);
             self.NZ.Layout.Column = 5;
             self.NZ.Layout.Row = 2;
-            self.NZ.Text = "Z-";
+            self.NZ.Text = "Z -";
 
         end
     end
