@@ -23,7 +23,7 @@ classdef CustomJointControl
     end
 
     methods (Access = public)
-        function self = CustomJointControl(parent)
+        function self = CustomJointControl(parent, robot)
             self.GridLayout = uigridlayout(parent);
             self.GridLayout.ColumnWidth = {'1x','4x'};
             self.GridLayout.RowHeight = {'1x','1x','1x','1x','1x','1x',};
@@ -35,7 +35,7 @@ classdef CustomJointControl
             self.Link0 = uislider(self.GridLayout);
             self.Link0.Layout.Column = 2;
             self.Link0.Layout.Row = 1;
-            self.Link0.Limits = [-180, 180];
+            self.Link0.Limits = rad2deg(robot.qlim(1,:)+[-0.1,0.1]);
 
             self.Link1Label = uilabel(self.GridLayout);
             self.Link1Label.Text = "Link 1";
@@ -44,7 +44,7 @@ classdef CustomJointControl
             self.Link1 = uislider(self.GridLayout);
             self.Link1.Layout.Column = 2;
             self.Link1.Layout.Row = 2;
-            self.Link1.Limits = [-180, 180];
+            self.Link1.Limits = rad2deg(robot.qlim(2,:)+[-0.1,0.1]);
 
 
             self.Link2Label = uilabel(self.GridLayout);
@@ -54,7 +54,7 @@ classdef CustomJointControl
             self.Link2 = uislider(self.GridLayout);
             self.Link2.Layout.Column = 2;
             self.Link2.Layout.Row = 3;
-            self.Link2.Limits = [-180, 180];
+            self.Link2.Limits = rad2deg(robot.qlim(3,:)+[-0.1,0.1]);
 
 
             self.Link3Label = uilabel(self.GridLayout);
@@ -64,7 +64,7 @@ classdef CustomJointControl
             self.Link3 = uislider(self.GridLayout);
             self.Link3.Layout.Column = 2;
             self.Link3.Layout.Row = 4;
-            self.Link3.Limits = [-180, 180];
+            self.Link3.Limits = rad2deg(robot.qlim(4,:)+[-0.1,0.1]);
 
 
             self.Link4Label = uilabel(self.GridLayout);
@@ -74,8 +74,7 @@ classdef CustomJointControl
             self.Link4 = uislider(self.GridLayout);
             self.Link4.Layout.Column = 2;
             self.Link4.Layout.Row = 5;
-            self.Link4.Limits = [-180, 180];
-
+            self.Link4.Limits = rad2deg(robot.qlim(5,:)+[-0.1,0.1]);
 
             self.Link5Label = uilabel(self.GridLayout);
             self.Link5Label.Text = "Link 5";
@@ -84,8 +83,7 @@ classdef CustomJointControl
             self.Link5 = uislider(self.GridLayout);
             self.Link5.Layout.Column = 2;
             self.Link5.Layout.Row = 6;
-            self.Link5.Limits = [-180, 180];
-
+            self.Link5.Limits = rad2deg(robot.qlim(6,:)+[-0.1,0.1]);
 
         end
     end

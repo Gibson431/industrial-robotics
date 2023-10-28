@@ -8,8 +8,8 @@ classdef Elle < CustomUR3
         heldObject;
         routeCount = 1;
         guesses = {[
-            -1.5708   -0.7854   -1.5708   -0.7854    1.5708    0.0000
-            -1.5708   -0.7854   -1.5708   -0.7854    1.5708    0.0000
+            -1.5708   -0.7854   -1.5708-0.7854   -0.7854    1.5708    0.0000
+            -1.5708   -0.7854   -1.5708-0.7854   -0.7854    1.5708    0.0000
             -1.5708    0.7854    1.5708   -2.3562   -1.5708         0
             -1.5708    0.7854    1.5708   -2.3562   -1.5708         0
             ],[
@@ -76,17 +76,16 @@ classdef Elle < CustomUR3
             end
         end
 
-        function self = rmrc(self)
-            deltaT = 0.05;                                                              % Discrete time step
+        function self = jogRMRC(self, xDot)
+            k = 1;
+            x = k * xDot;
+            J = self.model.jacob0(self.model.getpos);
+            qdot =pinv(J)*x';
+            qNext = self.model.getpos + (qdot'*0.1);
 
-            minManipMeasure = 0.1;
-            steps = 100;
-            deltaTheta = 2*pi/steps;
-            x = [];
-
-
+            self.jog(qNext);
         end
-
+        
         function self = calcNextRoute(self)
             currentJointState = self.model.getpos();
 
@@ -106,7 +105,7 @@ classdef Elle < CustomUR3
                 bz_pos = bTr.t(3);
 
                 waypoint1 = SE3(transl(bx_pos,by_pos, bz_pos + 0.2)*trotx(pi))*inv(self.gripperOffset);
-                waypoint2 = SE3(transl(bx_pos,by_pos,bz_pos + 0.01)*trotx(pi))*inv(self.gripperOffset);
+                waypoint2 = SE3(transl(bx_pos,by_pos,bz_pos)*trotx(pi))*inv(self.gripperOffset);
 
                 groupIndex = floor((netIndex-1)/4)+1;
                 nextJointState = self.model.ikcon(waypoint1, self.guesses{groupIndex}(1,:));

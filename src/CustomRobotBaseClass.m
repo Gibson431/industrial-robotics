@@ -69,7 +69,7 @@ classdef CustomRobotBaseClass < handle
 %% delete
         % Try to clean up gracefully by deleting just this robot plot
         function delete(self)
-            handles = findobj('Tag', self.model.name)
+            handles = findobj('Tag', self.model.name);
             h = get(handles,'UserData');
             try delete(h.robot); end 
             try delete(h.wrist); end
@@ -217,7 +217,7 @@ classdef CustomRobotBaseClass < handle
             end
 
             self.model.delay = 0;
-            handles = findobj('Tag', self.model.name)
+            handles = findobj('Tag', self.model.name);
             h = get(handles,'UserData');
         end
 

@@ -1,6 +1,5 @@
 classdef Ned < omronTM5
     properties
-        % robot;
         substrate;
         substrateCount = 16;
         substrateIndex = 0;
@@ -8,6 +7,8 @@ classdef Ned < omronTM5
         holdingObject = false;
         heldObject;
         routeCount = 1;
+        macroStep = 20;
+        microStep = 5;
         guesses = {[
             0.2827    0.3142    2.0019   -2.3248   -1.5708    2.4504
             0.1885    0.4712    2.1642   -2.7018   -1.5080    2.4504
@@ -70,21 +71,26 @@ classdef Ned < omronTM5
                 self.heldObject.animate(0);
             end
         end
+
+        function self = jogRMRC(self, xDot)
+            k = 1;
+            x = k * xDot;
+            J = self.model.jacob0(self.model.getpos);
+            qdot =pinv(J)*x';
+            qNext = self.model.getpos + (qdot'*0.1);
+
+            self.jog(qNext);
+        end
         
         function self = calcNextRoute(self)
-            
-            disp('recalc');
-            % steps = length(self.substrate.substrateModel);
-            
-            
-            
+            currentJointState = self.model.getpos();
+
+            if self.routeCount > 32
+                self = self.moveNed(currentJointState, [0 0 0 0 0 0], self.macroStep);
+                return
+            end
             if mod(self.routeCount, 2) == 1
-                currentJointState = self.model.getpos();
-                
-                if self.routeCount >= 32
-                    self = self.moveNed(currentJointState, [0 0 0 0 0 0], 3);
-                    
-                end
+    
                 elleIndex = floor(self.routeCount/2)+1;
                 bTr = self.substrate.substrateModel{elleIndex}.base;
                 
@@ -97,10 +103,10 @@ classdef Ned < omronTM5
                 
                 groupIndex = floor((elleIndex-1)/4)+1;
                 nextJointState = self.model.ikcon(waypoint1, self.guesses{groupIndex}(1,:));
-                self = self.moveNed(currentJointState, nextJointState, 3);
+                self = self.moveNed(currentJointState, nextJointState, self.macroStep);
                 
                 nextJointState = self.model.ikcon(waypoint2, self.guesses{groupIndex}(2,:));
-                self = self.moveNed(self.stepList(end,:), nextJointState, 5);
+                self = self.moveNed(self.stepList(end,:), nextJointState, self.microStep);
                 
             else
                 currentJointState = self.model.getpos();
@@ -117,10 +123,10 @@ classdef Ned < omronTM5
                 waypoint4 = transl(xPos,yPos,0.05) * trotx(-pi);
                 
                 nextJointState = self.model.ikcon(waypoint3, self.guesses{groupIndex}(3,:));
-                self = self.moveNedSubstrate(elleIndex, currentJointState, nextJointState, 3);
+                self = self.moveNedSubstrate(elleIndex, currentJointState, nextJointState, self.macroStep);
                 
                 nextJointState = self.model.ikcon(waypoint4, self.guesses{groupIndex}(4,:));
-                self = self.moveNedSubstrate(elleIndex, self.stepList(end,:), nextJointState, 5);
+                self = self.moveNedSubstrate(elleIndex, self.stepList(end,:), nextJointState, self.microStep);
             end
         end
         
