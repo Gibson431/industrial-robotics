@@ -24,7 +24,6 @@ classdef CustomJointControl
 
     methods (Access = public)
         function self = CustomJointControl(parent, robot)
-            disp(robot);
             self.GridLayout = uigridlayout(parent);
             self.GridLayout.ColumnWidth = {'1x','4x'};
             self.GridLayout.RowHeight = {'1x','1x','1x','1x','1x','1x',};
