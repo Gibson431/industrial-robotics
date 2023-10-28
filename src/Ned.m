@@ -32,7 +32,7 @@ classdef Ned < omronTM5
             0   -0.5655   -2.0019   -0.5655    1.3195         0
             0   -0.4084   -2.3806   -0.3770    1.3195         0 
             ]
-        
+        gripperOffset = SE3(transl(0,0,0.05));
     end
     methods
         function self = Ned(tr)
@@ -74,7 +74,7 @@ classdef Ned < omronTM5
         function self = jog(self, qVals)
             self.model.animate(qVals);
             if (self.holdingObject)
-                self.heldObject.base = self.model.fkine(qVals) * SE3(trotx(-pi/2));
+                self.heldObject.base = self.model.fkine(qVals)*self.gripperOffset*SE3(trotx(-pi/2));
                 self.heldObject.animate(0);
             end
         end
@@ -105,8 +105,8 @@ classdef Ned < omronTM5
                 by_pos = bTr.t(2);
                 bz_pos = bTr.t(3);
                 
-                waypoint1 = transl(bx_pos,by_pos, bz_pos + 0.1) * trotx(-pi);
-                waypoint2 = transl(bx_pos,by_pos,bz_pos + 0.02) * trotx(-pi);
+                waypoint1 = SE3(transl(bx_pos,by_pos, bz_pos + 0.1)*trotx(-pi))*inv(self.gripperOffset);
+                waypoint2 = SE3(transl(bx_pos,by_pos,bz_pos)*trotx(-pi))*inv(self.gripperOffset);
                 
                 groupIndex = floor((elleIndex-1)/4)+1;
                 nextJointState = self.model.ikcon(waypoint1, self.guesses{groupIndex}(1,:));
@@ -126,8 +126,8 @@ classdef Ned < omronTM5
                 xPos = 1.75-(rowIndex)*0.14-isEven*0.07;
                 yPos = 0.21+(groupIndex-1)*0.07;
                 
-                waypoint3 = transl(xPos,yPos,0.2) * trotx(-pi);
-                waypoint4 = transl(xPos,yPos,0.05) * trotx(-pi);
+                waypoint3 = SE3(transl(xPos,yPos,0.2)*trotx(-pi))*inv(self.gripperOffset);
+                waypoint4 = SE3(transl(xPos,yPos,0.05)*trotx(-pi))*inv(self.gripperOffset);
                 
                 nextJointState = self.model.ikcon(waypoint3, self.endGuesses(rowIndex+1,:));
                 self = self.moveNedSubstrate(elleIndex, currentJointState, nextJointState, self.macroStep);
