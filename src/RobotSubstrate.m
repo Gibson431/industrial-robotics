@@ -34,19 +34,19 @@ classdef RobotSubstrate < handle
                 self.substrateModel{i} = self.GetBrickModel(['Substrate',num2str(i)]);
                 
                 if i < 5
-                    self.substrateModel{i}.base = SE3(transl(0.5-(i-1)*0.05, 0.25,0.04)) * SE3(trotx(pi/2)) ;
+                    self.substrateModel{i}.base = SE3(transl(0.5-(i-1)*0.05, 0.25,0));
                 end
                 
                 if 5 <= i
-                    self.substrateModel{i}.base = SE3(transl(0.5-(i-5)*0.05, 0.2,0.04)) * SE3(trotx(pi/2)) ;
+                    self.substrateModel{i}.base = SE3(transl(0.5-(i-5)*0.05, 0.2,0));
                 end
                 
                 if 8 < i
-                    self.substrateModel{i}.base = SE3(transl(0.5-(i-9)*0.05, 0.15,0.04)) * SE3(trotx(pi/2)) ;
+                    self.substrateModel{i}.base = SE3(transl(0.5-(i-9)*0.05, 0.15,0)) ;
                 end
                 
                 if 12 < i
-                    self.substrateModel{i}.base = SE3(transl(0.5-(i-13)*0.05,0.1,0.04)) * SE3(trotx(pi/2)) ;
+                    self.substrateModel{i}.base = SE3(transl(0.5-(i-13)*0.05,0.1,0));
                     
                 end
                
@@ -90,7 +90,7 @@ classdef RobotSubstrate < handle
                 name = 'Netpot';
             end
             [faceData,vertexData] = plyread('30mm_Substrate.ply','tri');
-            link1 = Link('alpha',pi/2,'a',0,'d',0,'offset',0);
+            link1 = Link('alpha',0,'a',0,'d',0,'offset',0);
             model = SerialLink(link1,'name',name);
             
             % Changing order of cell array from {faceData, []} to

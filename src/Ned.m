@@ -74,7 +74,7 @@ classdef Ned < omronTM5
         function self = jog(self, qVals)
             self.model.animate(qVals);
             if (self.holdingObject)
-                self.heldObject.base = self.model.fkine(qVals)*self.gripperOffset*SE3(trotx(-pi/2));
+                self.heldObject.base = self.model.fkine(qVals)*self.gripperOffset;
                 self.heldObject.animate(0);
             end
         end
@@ -126,7 +126,7 @@ classdef Ned < omronTM5
                 xPos = 1.75-(rowIndex)*0.14-isEven*0.07;
                 yPos = 0.21+(groupIndex-1)*0.07;
                 
-                waypoint3 = SE3(transl(xPos,yPos,0.2)*trotx(-pi))*inv(self.gripperOffset);
+                waypoint3 = SE3(transl(xPos,yPos,0.1)*trotx(-pi))*inv(self.gripperOffset);
                 waypoint4 = SE3(transl(xPos,yPos,0.05)*trotx(-pi))*inv(self.gripperOffset);
                 
                 nextJointState = self.model.ikcon(waypoint3, self.endGuesses(rowIndex+1,:));
