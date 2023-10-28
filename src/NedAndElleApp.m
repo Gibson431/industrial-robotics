@@ -165,16 +165,15 @@ classdef NedAndElleApp < matlab.apps.AppBase
         end
 
         function EStopValueChanged(app, event)
-            % app.eStop = event.Value;
             app.AutoSwitch.Value = "Off";
         end
         function AutoValueChanged(app, event)
-            % app.eStop = event.Value;
-            if event.Value == "On"
+            if app.EStopSwitch.Value == "On"
+                app.AutoSwitch.Value = "Off"
+            elseif event.Value == "On"
                 app.NedRobot.stepList = [];
                 app.ElleRobot.stepList = [];
             end
-            disp(event);
         end
 
         function updateAppLayout(app, ~)
