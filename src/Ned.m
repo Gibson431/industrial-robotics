@@ -26,6 +26,13 @@ classdef Ned < omronTM5
             0.4712    0.5655    1.8937   -2.5133   -1.5080    2.4504
             0   -0.4398   -1.1362   -1.5708    1.5080         0
             0   -0.5969   -1.5691   -0.9425    1.3823         0            ]}
+        endGuesses = [
+            0   -1.0681   -0.7034   -1.4451    1.3195         0 
+            0   -0.7540   -1.4067   -1.0681    1.3195         0
+            0   -0.5655   -2.0019   -0.5655    1.3195         0
+            0   -0.4084   -2.3806   -0.3770    1.3195         0 
+            ]
+        
     end
     methods
         function self = Ned(tr)
@@ -122,10 +129,10 @@ classdef Ned < omronTM5
                 waypoint3 = transl(xPos,yPos,0.2) * trotx(-pi);
                 waypoint4 = transl(xPos,yPos,0.05) * trotx(-pi);
                 
-                nextJointState = self.model.ikcon(waypoint3, self.guesses{groupIndex}(3,:));
+                nextJointState = self.model.ikcon(waypoint3, self.endGuesses(rowIndex+1,:));
                 self = self.moveNedSubstrate(elleIndex, currentJointState, nextJointState, self.macroStep);
                 
-                nextJointState = self.model.ikcon(waypoint4, self.guesses{groupIndex}(4,:));
+                nextJointState = self.model.ikcon(waypoint4, self.endGuesses(rowIndex+1,:));
                 self = self.moveNedSubstrate(elleIndex, self.stepList(end,:), nextJointState, self.microStep);
             end
         end
