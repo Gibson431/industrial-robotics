@@ -76,17 +76,16 @@ classdef Elle < CustomUR3
             end
         end
 
-        function self = rmrc(self)
-            deltaT = 0.05;                                                              % Discrete time step
+        function self = jogRMRC(self, xDot)
+            k = 1;
+            x = k * xDot;
+            J = self.model.jacob0(self.model.getpos);
+            qdot =pinv(J)*x';
+            qNext = self.model.getpos + (qdot'*0.1);
 
-            minManipMeasure = 0.1;
-            steps = 100;
-            deltaTheta = 2*pi/steps;
-            x = [];
-
-
+            self.jog(qNext);
         end
-
+        
         function self = calcNextRoute(self)
             currentJointState = self.model.getpos();
 

@@ -72,6 +72,16 @@ classdef Ned < omronTM5
                 self.heldObject.animate(0);
             end
         end
+
+        function self = jogRMRC(self, xDot)
+            k = 1;
+            x = k * xDot;
+            J = self.model.jacob0(self.model.getpos);
+            qdot =pinv(J)*x';
+            qNext = self.model.getpos + (qdot'*0.1);
+
+            self.jog(qNext);
+        end
         
         function self = calcNextRoute(self)
             
