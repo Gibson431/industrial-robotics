@@ -432,7 +432,7 @@ classdef NedAndElleApp < matlab.apps.AppBase
                     app.updateRightSliders();
                     pause(0.2);
                 else
-                    pause(0.1);
+                    pause(0.5);
                 end
             end
         end
