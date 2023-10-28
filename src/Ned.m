@@ -109,10 +109,10 @@ classdef Ned < omronTM5
                 waypoint2 = SE3(transl(bx_pos,by_pos,bz_pos)*trotx(-pi))*inv(self.gripperOffset);
                 
                 groupIndex = floor((elleIndex-1)/4)+1;
-                nextJointState = self.model.ikcon(waypoint1, self.guesses{groupIndex}(1,:));
+                nextJointState = self.model.ikine(waypoint1, self.guesses{groupIndex}(1,:));
                 self = self.moveNed(currentJointState, nextJointState, self.macroStep);
                 
-                nextJointState = self.model.ikcon(waypoint2, self.guesses{groupIndex}(2,:));
+                nextJointState = self.model.ikine(waypoint2, self.guesses{groupIndex}(2,:));
                 self = self.moveNed(self.stepList(end,:), nextJointState, self.microStep);
                 
             else
