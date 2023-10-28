@@ -80,7 +80,6 @@ classdef NedAndElleApp < matlab.apps.AppBase
         end
 
         function RightTranslationButtonPressed(app, event)
-            disp(event.Source.Text);
             xDot = [0 0 0 0 0 0];
             switch event.Source.Text
                 case 'X +'
@@ -102,7 +101,6 @@ classdef NedAndElleApp < matlab.apps.AppBase
         end
 
         function RightRotationButtonPressed(app, event)
-            disp(event.Source.Text);
             xDot = [0 0 0 0 0 0];
             switch event.Source.Text
                 case 'X +'
