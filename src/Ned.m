@@ -45,8 +45,6 @@ classdef Ned < omronTM5
             self.substrate = RobotSubstrate(self.substrateCount);
         end
         %% Move Robot
-        
-        
         function self = doStep(self)
             if ~isempty(self.stepList)
                 self.jog(self.stepList(1,:));
@@ -80,7 +78,7 @@ classdef Ned < omronTM5
         end
 
         function self = jogRMRC(self, xDot)
-            k = 1;
+            k = 0.2;
             x = k * xDot;
             J = self.model.jacob0(self.model.getpos);
             qdot =pinv(J)*x';

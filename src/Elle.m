@@ -77,7 +77,7 @@ classdef Elle < CustomUR3
         end
 
         function self = jogRMRC(self, xDot)
-            k = 1;
+            k = 0.2;
             x = k * xDot;
             J = self.model.jacob0(self.model.getpos);
             qdot =pinv(J)*x';
