@@ -55,7 +55,9 @@ classdef NedAndElleApp < matlab.apps.AppBase
                 case 'Z -'
                     xDot(3) = -1;
             end
-            app.NedRobot.jogRMRC(xDot);
+            if (app.EStopSwitch.Value == "Off")
+                app.NedRobot.jogRMRC(xDot);
+            end
             app.updateLeftSliders();
         end
 
@@ -75,7 +77,9 @@ classdef NedAndElleApp < matlab.apps.AppBase
                 case 'Z -'
                     xDot(6) = -1;
             end
-            app.NedRobot.jogRMRC(xDot);
+            if (app.EStopSwitch.Value == "Off")
+                app.NedRobot.jogRMRC(xDot);
+            end
             app.updateLeftSliders();
         end
 
@@ -95,8 +99,9 @@ classdef NedAndElleApp < matlab.apps.AppBase
                 case 'Z -'
                     xDot(3) = -1;
             end
-
-            app.ElleRobot.jogRMRC(xDot);
+            if (app.EStopSwitch.Value == "Off")
+                app.ElleRobot.jogRMRC(xDot);
+            end
             app.updateRightSliders();
         end
 
@@ -116,11 +121,17 @@ classdef NedAndElleApp < matlab.apps.AppBase
                 case 'Z -'
                     xDot(6) = -1;
             end
-            app.ElleRobot.jogRMRC(xDot);           
+            if (app.EStopSwitch.Value == "Off")
+                app.ElleRobot.jogRMRC(xDot);
+            end
             app.updateRightSliders();
         end
 
-        function LeftSlidersMoved(app, ~)
+        function LeftSlidersMoved(app, event)
+            if (app.EStopSwitch.Value == "On")
+                event.Source.Value = event.PreviousValue;
+                return
+            end
             L0 = app.LeftSliderGroup.Link0.Value;
             L1 = app.LeftSliderGroup.Link1.Value;
             L2 = app.LeftSliderGroup.Link2.Value;
@@ -142,7 +153,11 @@ classdef NedAndElleApp < matlab.apps.AppBase
             app.LeftSliderGroup.Link5.Value = qDeg(6);
         end
 
-        function RightSlidersMoved(app, ~)
+        function RightSlidersMoved(app, event)
+            if (app.EStopSwitch.Value == "On")
+                event.Source.Value = event.PreviousValue;
+                return
+            end
             L0 = app.RightSliderGroup.Link0.Value;
             L1 = app.RightSliderGroup.Link1.Value;
             L2 = app.RightSliderGroup.Link2.Value;
@@ -164,12 +179,12 @@ classdef NedAndElleApp < matlab.apps.AppBase
             app.RightSliderGroup.Link5.Value = qDeg(6);
         end
 
-        function EStopValueChanged(app, event)
+        function EStopValueChanged(app, ~)
             app.AutoSwitch.Value = "Off";
         end
         function AutoValueChanged(app, event)
             if app.EStopSwitch.Value == "On"
-                app.AutoSwitch.Value = "Off"
+                app.AutoSwitch.Value = "Off";
             elseif event.Value == "On"
                 app.NedRobot.stepList = [];
                 app.ElleRobot.stepList = [];
