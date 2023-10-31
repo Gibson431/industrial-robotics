@@ -57,8 +57,8 @@ classdef Elle < CustomUR3
                     self.stepList = self.stepList(2:end, :);
                 end
 
-                drawnow();
-                pause(0.1);
+                % drawnow();
+                % pause(0.1);
 
             elseif (self.holdingObject)
                 self.holdingObject = false;
