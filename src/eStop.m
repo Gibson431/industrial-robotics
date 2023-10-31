@@ -1,48 +1,31 @@
-classdef eStop
+classdef eStop < matlab.apps.AppBase
+    
     properties
-        arduinoObj
-        buttonPin
+        StopButton1 % Variable to indicate if button1 is pressed
     end
     
-    methods
-        function obj = eStop(comPort, buttonPin)
-            % Constructor: Initialize the Arduino and button pin
-            obj.arduinoObj = arduino(comPort, 'Uno', 'Libraries', 'Adafruit\MotorShieldV2');
-            obj.buttonPin = buttonPin;
+    methods (Access = protected)
+        function createComponents(app)
+            led_pin = 'D8'; % Change value to whichever digital pin is meant to be read.
+            button1_pin = 'D2'; % Change value to whichever digital pin is meant to be read.
+            button2_pin = 'D3'; % Change value to whichever digital pin is meant to be read.
             
-            % Set the button pin mode to input
-            configurePin(obj.arduinoObj, obj.buttonPin, 'DigitalInput');
-        end
-        
-        function buttonPress(obj)
-            % Run this method to continuously check if the button is pressed
+            % Set the StopButton1 to false initially
+            app.StopButton1 = false;
+            
+            % Create a loop to continuously check the button state
             while true
-                buttonState = readDigitalPin(obj.arduinoObj, obj.buttonPin);
+                buttonState = readDigitalPin(f, button1_pin);
+                if buttonState == 1
+                    app.StopButton1 = true; % Set StopButton1 to true if button1 is pressed
+                end
                 
-                if buttonState == 0
-                    disp('Estop pressed. Stopping the code.');
-                    break; % Exit the loop and stop the code
+                if app.StopButton1
+                    break; % Exit the loop if button1 is pressed
                 end
             end
-        end
-        
-        function delete(obj)
-            % Destructor: Clean up when the object is deleted
-            clear obj.arduinoObj;
+            
+            % Your code here
         end
     end
 end
-
- %% e stop
-  
-comPort = 'cu.usbmodem14301'; %change this depending on your computer com port 
-buttonPin = 'D2'; % replace with the actual pin connected to the button
-
-% Create an instance of the class
-buttonControl = ArduinoButtonControl(comPort, buttonPin);
-
-% Call the method to stop the code when the button is pressed
-buttonControl.stopWhenButtonPressed();
-
-% Clean up when you're done
-clear buttonControl;
