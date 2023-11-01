@@ -9,6 +9,17 @@ while true
     robot.doStep();
 end
 
+% 
+% % Check if the emergency stop button is pressed
+% if emergency.StopButton1
+%     disp('Emergency Stop button is pressed. Elle should stop.');
+%     elleRobot.stop(); % Implement Elle's stop method
+% else
+%     disp('Emergency Stop button is not pressed. Elle continues operation.');
+%     elleRobot.performActions(); % Replace with your Elle's action method
+% end
+
+
 %% guesses
 %initial offset
 %    -1.5080   -0.2513   -1.2566   -1.7593    1.5080         0

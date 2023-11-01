@@ -28,7 +28,7 @@ classdef Elle < CustomUR3
             -1.5708    0.7854    1.5708   -2.3562   -1.5708         0
             -1.5708    0.7854    1.5708   -2.3562   -1.5708         0
             ]};
-        gripperOffset = SE3(transl(0,0,0.05));
+%         gripperOffset = SE3(transl(0,0,0.05));
 
     end
     methods
