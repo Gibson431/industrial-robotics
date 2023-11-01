@@ -2,14 +2,15 @@ close all
 clear
 clc
 hold on
-flats = PlaceObject("2_Flats.ply",[1.5,0.3,0]);
+% flats = PlaceObject("2_Flats.ply",[1.5,0.3,0]);
 robot = Elle(eye(4));
 % robot.model.teach();
 while true
     robot.doStep();
+    pause(0.2);
 end
 
-% 
+
 % % Check if the emergency stop button is pressed
 % if emergency.StopButton1
 %     disp('Emergency Stop button is pressed. Elle should stop.');
