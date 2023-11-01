@@ -1,5 +1,7 @@
 classdef Ned < omronTM5
     properties
+        controller;
+        hasROS;
         substrate;
         substrateCount = 16;
         substrateIndex = 0;
@@ -146,6 +148,9 @@ classdef Ned < omronTM5
             self = self.moveNed(fromJointState, toJointState, steps);
             self.holdingObject = true;
             self.heldObject = self.substrate.substrateModel{i};
+            if (self.hasROS)
+                self.controller.actuate_gripper();
+            end
         end
     end
 end
