@@ -1,7 +1,5 @@
 classdef Ned < omronTM5
     properties
-        controller;
-        hasROS;
         substrate;
         substrateCount = 16;
         substrateIndex = 0;
@@ -34,17 +32,22 @@ classdef Ned < omronTM5
             0   -0.5655   -2.0019   -0.5655    1.3195         0
             0   -0.4084   -2.3806   -0.3770    1.3195         0 
             ]
-        gripperOffset = SE3(transl(0,0,0.05));
+        gripperOffset = SE3(transl(0,0,0.13));
+        gripper;
+
     end
     methods
         function self = Ned(tr)
             baseTr = eye(4);
-            if nargin == 1
+            if nargin ~= 0
                 baseTr = tr;
             end
             self.model.base = baseTr * transl(0.9,0.5,0);
             self.model.animate([0 0 0 0 0 0]);
             self.substrate = RobotSubstrate(self.substrateCount);
+
+            endEffector = self.model.fkine(self.model.getpos).T;
+            self.gripper = gripper(endEffector,1);
         end
         %% Move Robot
         function self = doStep(self)
@@ -54,8 +57,9 @@ classdef Ned < omronTM5
                 if length(self.stepList(:,end)) == 1
                     self.routeCount = self.routeCount + 1;
                     self.holdingObject = false;
-                    self.calcNextRoute();
+                    self.gripper.Open(1);
                     self.stepList = [];
+                    self.calcNextRoute();
                 else
                     self.stepList = self.stepList(2:end, :);
                 end
@@ -65,6 +69,7 @@ classdef Ned < omronTM5
                 
             elseif (self.holdingObject)
                 self.holdingObject = false;
+                self.gripper.Open(1);
                 self = self.calcNextRoute();
             else
                 self = self.calcNextRoute();
@@ -73,14 +78,10 @@ classdef Ned < omronTM5
         
         function self = jog(self, qVals)
             self.model.animate(qVals);
+            self.gripper.moveBase(self.model.fkine(self.model.getpos));
             if (self.holdingObject)
                 self.heldObject.base = self.model.fkine(qVals)*self.gripperOffset;
                 self.heldObject.animate(0);
-            end
-
-            if self.hasROS
-                self.controller.SetGoal(qVals);
-                self.controller.doGoal;
             end
         end
 
@@ -102,7 +103,8 @@ classdef Ned < omronTM5
                 return
             end
             if mod(self.routeCount, 2) == 1
-    
+                currentJointState = self.model.getpos();
+
                 elleIndex = floor(self.routeCount/2)+1;
                 bTr = self.substrate.substrateModel{elleIndex}.base;
                 
@@ -139,12 +141,14 @@ classdef Ned < omronTM5
                 
                 nextJointState = self.model.ikcon(waypoint4, self.endGuesses(rowIndex+1,:));
                 self = self.moveNedSubstrate(elleIndex, self.stepList(end,:), nextJointState, self.microStep);
+                                
+                self.gripper.Close(1);
+
             end
         end
         
         function self = moveNed(self,fromJointState, toJointState, steps)
             currentJointState = fromJointState;
-            % steps = 20;
             qMatrix = jtraj(currentJointState,toJointState,steps);
             self.stepList = [self.stepList; qMatrix];
         end
@@ -153,9 +157,6 @@ classdef Ned < omronTM5
             self = self.moveNed(fromJointState, toJointState, steps);
             self.holdingObject = true;
             self.heldObject = self.substrate.substrateModel{i};
-            if (self.hasROS)
-                self.controller.actuate_gripper();
-            end
         end
     end
 end
