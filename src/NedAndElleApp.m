@@ -28,6 +28,7 @@ classdef NedAndElleApp < matlab.apps.AppBase
         NedRobot
         ElleRobot
         environment;
+        LightCurtain;
 
     end
 

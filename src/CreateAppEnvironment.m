@@ -2,6 +2,7 @@ function app = CreateAppEnvironment(app, origin)
 % hold on;
 app.NedRobot = Ned(origin.T); %* transl(0.75,0.5,0));
 app.ElleRobot = Elle(origin.T); % * transl(1.75,-0.25,0));
+app.LightCurtain = LightCurtain(SE3(transl(-1,-3.2,-0.5)), SE3(transl(-1,0.75,-0.5)), 2);
 
 x_pos = origin.t(1);
 y_pos = origin.t(2);
@@ -11,9 +12,9 @@ z_pos = origin.t(3);
 %     z_pos-0.9,z_pos-0.9],'CData',imread('concrete.jpg'),'FaceColor','texturemap');
 % app.environment = [app.environment, surface];
 
-% room = PlaceObject("room.ply",[x_pos-2.1,y_pos-3.25,z_pos-1]);
+room = PlaceObject("room.ply",[x_pos-2.1,y_pos-3.25,z_pos-1]);
 % rotate(flats, [0,0,1], 90, [0,0,0]);
-% app.environment = [app.environment, room];
+app.environment = [app.environment, room];
 
 
 flats = PlaceObject("2_Flats.ply",[x_pos+1.5,y_pos+0.3,z_pos]);
