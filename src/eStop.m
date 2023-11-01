@@ -1,31 +1,38 @@
-classdef eStop < matlab.apps.AppBase
-    
+classdef eStop < handle
     properties
-        StopButton1 % Variable to indicate if button1 is pressed
+        isRunning = true;
+        arduino;
+        
     end
     
-    methods (Access = protected)
-        function createComponents(app)
-            led_pin = 'D8'; % Change value to whichever digital pin is meant to be read.
-            button1_pin = 'D2'; % Change value to whichever digital pin is meant to be read.
-            button2_pin = 'D3'; % Change value to whichever digital pin is meant to be read.
-            
-            % Set the StopButton1 to false initially
-            app.StopButton1 = false;
-            
-            % Create a loop to continuously check the button state
+    methods
+        function obj = testEstop()
+            a = arduino();  % Initialize the Arduino object
+            stopBut = readDigitalPin(a, 'D2');
+            resBut = readDigitalPin(a, 'D3');
+        end
+        
+        function Loop(obj)
             while true
-                buttonState = readDigitalPin(f, button1_pin);
-                if buttonState == 1
-                    app.StopButton1 = true; % Set StopButton1 to true if button1 is pressed
+                                
+                if isRunning && stopBut == 1
+                    disp('Stop button is pressed. Stopping the script...');
+                    
                 end
                 
-                if app.StopButton1
-                    break; % Exit the loop if button1 is pressed
+                if isRunning  && stopBut == 0
+                    disp('Stop button is pressed. Stopping the script...');
+                    break;
                 end
+                
+                if resBut == 1
+                    obj.isRunning = true;
+                    disp('Resume button is pressed. Resuming the script...');
+                end
+
             end
-            
-            % Your code here
         end
+       
     end
 end
+
