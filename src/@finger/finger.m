@@ -1,11 +1,9 @@
 
-classdef finger < customRobotBaseClass
+classdef finger < CustomRobotBaseClass
 
 
     properties(Access = public)
         plyFileNameStem = 'Gripper';
-        gripperL;
-        gripperR;
     end
 
     methods
@@ -17,7 +15,12 @@ classdef finger < customRobotBaseClass
             end
             self.model.base = self.model.base.T * baseTr * troty(pi);
             % self.model.plot(zeros(1,3));
+            
             self.PlotAndColourRobot();
+            % self.model.teach()
+            
+            % % self.PlotAndColourRobot();
+            % self.model.teach()
        
         end
 

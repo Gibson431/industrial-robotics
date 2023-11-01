@@ -28,7 +28,8 @@ classdef Elle < CustomUR3
             -1.5708    0.7854    1.5708   -2.3562   -1.5708         0
             -1.5708    0.7854    1.5708   -2.3562   -1.5708         0
             ]};
-%         gripperOffset = SE3(transl(0,0,0.05));
+        gripperOffset = SE3(transl(0,0,0.12));
+        gripper;
 
     end
     methods
@@ -41,6 +42,9 @@ classdef Elle < CustomUR3
             self.model.base = baseTr * transl(1.5,-0.05,0);
             self.model.animate([0 0 0 0 0 pi/2]);
             self.netpot = RobotNetpots(self.netpotCount);
+
+            endEffector = self.model.fkine(self.model.getpos).T;
+            self.gripper = gripper(endEffector);
         end
 
         %% Move Robot
@@ -51,8 +55,9 @@ classdef Elle < CustomUR3
                 if length(self.stepList(:,end)) == 1
                     self.routeCount = self.routeCount + 1;
                     self.holdingObject = false;
-                    self.calcNextRoute();
+                    self.gripper.Close();
                     self.stepList = [];
+                    self.calcNextRoute();
                 else
                     self.stepList = self.stepList(2:end, :);
                 end
@@ -62,6 +67,7 @@ classdef Elle < CustomUR3
 
             elseif (self.holdingObject)
                 self.holdingObject = false;
+                self.gripper.Close();
                 self.calcNextRoute();
             else
                 self.calcNextRoute();
@@ -70,8 +76,10 @@ classdef Elle < CustomUR3
 
         function self = jog(self, qVals)
             self.model.animate(qVals);
+            self.gripper.moveBase(self.model.fkine(self.model.getpos));
+
             if (self.holdingObject)
-                self.heldObject.base = self.model.fkine(qVals)*self.gripperOffset*SE3(trotx(pi/2));
+                self.heldObject.base = self.model.fkine(qVals)* self.gripperOffset * SE3(trotx(pi/2));
                 self.heldObject.animate(0);
             end
         end
@@ -132,6 +140,10 @@ classdef Elle < CustomUR3
 
                 nextJointState = self.model.ikcon(waypoint4, self.guesses{groupIndex}(4,:));
                 self = self.moveElleNetpot(netIndex, self.stepList(end,:), nextJointState, 5);
+
+                self.gripper.Open();
+                disp(length(self.stepList))
+
 
             end
 
