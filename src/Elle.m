@@ -44,7 +44,7 @@ classdef Elle < CustomUR3
             self.netpot = RobotNetpots(self.netpotCount);
 
             endEffector = self.model.fkine(self.model.getpos).T;
-            self.gripper = gripper(endEffector,0);
+            self.gripper = Gripper(endEffector,0);
         end
 
         %% Move Robot

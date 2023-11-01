@@ -1,4 +1,4 @@
-classdef gripper < handle
+classdef Gripper < handle
     %% Combine pincers to create gripper
 
     properties
@@ -19,7 +19,7 @@ classdef gripper < handle
     end
 
     methods
-        function self = gripper(endPose,robot)
+        function self = Gripper(endPose,robot)
             self.fingerL = finger(endPose * trotx(pi/2) * troty(pi));
             self.fingerR = finger(endPose * trotx(pi/2));
             % self.fingerL.model.delay = 0;

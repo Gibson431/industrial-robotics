@@ -47,7 +47,7 @@ classdef Ned < omronTM5
             self.substrate = RobotSubstrate(self.substrateCount);
 
             endEffector = self.model.fkine(self.model.getpos).T;
-            self.gripper = gripper(endEffector,1);
+            self.gripper = Gripper(endEffector,1);
         end
         %% Move Robot
         function self = doStep(self)
