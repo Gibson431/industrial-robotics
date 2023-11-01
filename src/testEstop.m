@@ -9,20 +9,20 @@ while true
     robot.doStep();
 end
 
-% Create an instance of the eStop class
-emergency = eStop();
+led_pin = 'D8'; % Change value to whichever digital pin is meant to be read.
+button1_pin = 'D2'; % Change value to whichever digital pin is meant to be read.
+button2_pin = 'D3'; % Change value to whichever digital pin is meant to be read.
 
+% Set the StopButton1 to false initially
 
-% Check if the emergency stop button is pressed
-if emergency.StopButton1
-    disp('Emergency Stop button is pressed. Elle should stop.');
-    elleRobot.stop(); % Implement Elle's stop method
-else
-    disp('Emergency Stop button is not pressed. Elle continues operation.');
-    elleRobot.performActions(); % Replace with your Elle's action method
+% Create a loop to continuously check the button state
+while true
+    buttonState = readDigitalPin(f, button1_pin);
+    if buttonState == 1
+        app.StopButton1 = true; % Set StopButton1 to true if button1 is pressed
+    end
+    
+    if app.StopButton1
+        break; % Exit the loop if button1 is pressed
+    end
 end
-
-
-% Clean up and release resources
-clear elleRobot;
-clear eStop;
