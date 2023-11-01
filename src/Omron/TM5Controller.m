@@ -35,11 +35,6 @@ classdef TM5Controller < handle
 
         end
 
-        function [recMove] = getMove(self,sendMove)
-            self.chessMove.PrevMove = sendMove;
-            recMove = call(self.chessClient, self.chessMove);
-        end
-
         function actuate_gripper(self)
             gripperClient = rossvcclient('/gripper_serv', 'std_srvs/Trigger');
             resp = call(gripperClient);

@@ -77,6 +77,11 @@ classdef Ned < omronTM5
                 self.heldObject.base = self.model.fkine(qVals)*self.gripperOffset;
                 self.heldObject.animate(0);
             end
+
+            if self.hasROS
+                self.controller.SetGoal(qVals);
+                self.controller.doGoal;
+            end
         end
 
         function self = jogRMRC(self, xDot)
