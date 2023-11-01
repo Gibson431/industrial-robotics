@@ -1,4 +1,4 @@
-classdef Ned < omronTM5
+classdef Ned < omronTM5_700
     properties
         substrate;
         substrateCount = 16;
