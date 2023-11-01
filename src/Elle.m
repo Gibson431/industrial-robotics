@@ -44,7 +44,7 @@ classdef Elle < CustomUR3
             self.netpot = RobotNetpots(self.netpotCount);
 
             endEffector = self.model.fkine(self.model.getpos).T;
-            self.gripper = gripper(endEffector,1);
+            self.gripper = gripper(endEffector,0);
         end
 
         %% Move Robot
@@ -55,7 +55,7 @@ classdef Elle < CustomUR3
                 if length(self.stepList(:,end)) == 1
                     self.routeCount = self.routeCount + 1;
                     self.holdingObject = false;
-                    self.gripper.Close();
+                    self.gripper.Close(0);
                     self.stepList = [];
                     self.calcNextRoute();
                 else
@@ -67,7 +67,7 @@ classdef Elle < CustomUR3
 
             elseif (self.holdingObject)
                 self.holdingObject = false;
-                self.gripper.Close();
+                self.gripper.Close(0);
                 self.calcNextRoute();
             else
                 self.calcNextRoute();
@@ -141,7 +141,7 @@ classdef Elle < CustomUR3
                 nextJointState = self.model.ikcon(waypoint4, self.guesses{groupIndex}(4,:));
                 self = self.moveElleNetpot(netIndex, self.stepList(end,:), nextJointState, 5);
 
-                self.gripper.Open();
+                self.gripper.Open(0);
 
 
             end
