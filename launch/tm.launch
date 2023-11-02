@@ -1,0 +1,7 @@
+<launch>
+    <include file="$(find tm_driver)/launch/tm_common.launch" >
+        <arg name="robot_ip" value="169.254.57.88" />
+    </include>
+    
+    <include file="$(find industrial_robotics)/launch/roscom.launch" />
+</launch>

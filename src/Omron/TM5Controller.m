@@ -26,6 +26,12 @@ classdef TM5Controller < handle
             rosinit(default_ip)
             self.jointStateSubscriber = rossubscriber('joint_states','sensor_msgs/JointState');
 
+            while isempty(self.jointStateSubscriber.LatestMessage)
+                pause(0.2);
+                disp('waiting for joint state');
+            end
+            disp('joint state recieved')
+
             pause(2); % Pause to give time for a message to appear
             self.currentJointState_123456 = (self.jointStateSubscriber.LatestMessage.Position)';
             self.jointNames = {'shoulder_1_joint','shoulder_2_joint', 'elbow_joint', 'wrist_1_joint', 'wrist_2_joint', 'wrist_3_joint'};
@@ -41,11 +47,12 @@ classdef TM5Controller < handle
         end
 
         function SetGoal(self, duration, joints, reset)
+            joints(5) = -joints(5);
             self.goal.Trajectory.JointNames = self.jointNames;
             self.seq = self.seq + 1;
             self.goal.Trajectory.Header.Seq = self.seq;
             self.goal.Trajectory.Header.Stamp = rostime('Now','system');
-            self.goal.GoalTimeTolerance = rosduration(0.5);
+            self.goal.GoalTimeTolerance = rosduration(0.1);
             bufferSeconds = 1; % This allows for the time taken to send the message. If the network is fast, this could be reduced.
 
             if reset == 1

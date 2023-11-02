@@ -1,0 +1,3 @@
+<launch>
+    <node pkg="industrial_robotics" type="ROSCom.py" name="ROSCOM" />
+</launch>
