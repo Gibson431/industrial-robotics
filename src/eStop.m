@@ -1,24 +1,25 @@
-% robot = Elle(eye(4));
-a = arduino
+status = 1; % 0 = stopped, 1 = running, 2 = on hold
+lastStopState = 1;
 
-buttonPin = readDigitalPin(a, 'D2') % Change value to whichever digital pin is meant to be read.
+stopPin = readDigitalPin(arduino, 'D2');
+% resPin = readDigitalPin(arduino, 'D3');
 
-    if buttonPin == 1
-        % Code to run when buttonPin is equal to 1
-        disp('Button is not pressed. Running code...');
-        % Replace with your code to be executed
-    else if buttonPin == 0
-        % Code to pause when buttonPin is equal to 0
-        disp('Button is pressed. Pausing...');
-        % Add any necessary pause or delay here
-        break;
-        
+while true
+
+if (lastStopState && stopPin == 1)
+    if (status ~= 0)
+        status = 0;
+        disp('estop pressed')
+    else
+        status = 2;
+        disp('on hold')
     end
 end
 
-% if buttonPin == 1
-%     
-% else if buttonPin == 0
-%         disp('huh');
-%     end
-% end
+if  status == 2 && (resPin == 1) 
+    status = 1
+    disp('running')
+end
+        
+lastStopState = stopPin;
+end
