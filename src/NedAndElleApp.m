@@ -463,6 +463,8 @@ classdef NedAndElleApp < matlab.apps.AppBase
                     if app.EStopReal.checkEStop()
                         app.EStopSwitch.Value = "On";
                         app.AutoSwitch.Value = "Off";
+                    else
+                        app.EStopSwitch.Value = "Off";
                     end
                 end
 
