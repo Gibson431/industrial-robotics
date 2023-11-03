@@ -1,8 +1,8 @@
 close all
-clear
+clear all 
 clc
-hold on
 
-robot = Elle(eye(4));
-estop = eStop();
 
+estop = eStop(arduino);
+
+estop.checkEStop;
