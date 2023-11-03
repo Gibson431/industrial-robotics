@@ -17,6 +17,7 @@ classdef NedAndElleApp < matlab.apps.AppBase
         AutoSwitchLabel matlab.ui.control.Label
         EStopSwitch matlab.ui.control.Switch
         EStopSwitchLabel matlab.ui.control.Label
+        TestLightCurtain matlab.ui.control.Button
 
         RightPanel  matlab.ui.container.Panel
         RightGrid matlab.ui.container.GridLayout
@@ -29,6 +30,8 @@ classdef NedAndElleApp < matlab.apps.AppBase
         ElleRobot
         environment;
         LightCurtain;
+        Person;
+        triggerCollisionDetect = false;
 
     end
 
@@ -229,6 +232,10 @@ classdef NedAndElleApp < matlab.apps.AppBase
                 app.RightPanel.Layout.Column = 3;
             end
         end
+        
+        function TestLCPressed(app, event)
+            app.triggerCollisionDetect = true;
+        end
     end
 
     % Component initialisation
@@ -316,7 +323,7 @@ classdef NedAndElleApp < matlab.apps.AppBase
             % Create CentreGrid
             app.CentreGrid = uigridlayout(app.CentrePanel);
             app.CentreGrid.ColumnWidth = {'1x'};
-            app.CentreGrid.RowHeight = {'1x','4x','2x','1x','2x'};
+            app.CentreGrid.RowHeight = {'1x','4x','2x','1x','2x','1x'};
             app.CentreGrid.Padding = [10 10 10 10];
 
             % Create AutoSwitchLabel
@@ -344,7 +351,13 @@ classdef NedAndElleApp < matlab.apps.AppBase
             app.EStopSwitch.Layout.Row = 5;
             app.EStopSwitch.Layout.Column = 1;
             app.EStopSwitch.ValueChangedFcn = createCallbackFcn(app, @EStopValueChanged, true);
-
+            
+            % Create start test button
+            app.TestLightCurtain = uibutton(app.CentreGrid);
+            app.TestLightCurtain.Layout.Column = 1;
+            app.TestLightCurtain.Layout.Row = 6;
+            app.TestLightCurtain.Text = "Test Light Curtain";
+            app.TestLightCurtain.ButtonPushedFcn = createCallbackFcn(app, @TestLCPressed, true);
 
 
             % Create RightPanel
@@ -438,6 +451,16 @@ classdef NedAndElleApp < matlab.apps.AppBase
 
         function app = processLoop(app)
             while (true)
+                if (app.EStopSwitch.Value == "Off")
+                    if (app.triggerCollisionDetect)
+                        if (app.LightCurtain.checkCollision(app.Person.model.points(1), app.Person.model.base))
+                            app.EStopSwitch.Value = "On";
+                            continue;
+                        end
+                        app.Person.MoveBase(transl(0,-0.1,0));
+                    end
+                end
+
                 if (app.EStopSwitch.Value == "Off" && app.AutoSwitch.Value == "On")
                     app.stepsComplete = app.stepsComplete + 1;
                     app.ElleRobot.doStep();

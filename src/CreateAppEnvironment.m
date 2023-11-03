@@ -2,7 +2,9 @@ function app = CreateAppEnvironment(app, origin)
 % hold on;
 app.NedRobot = Ned(origin.T); %* transl(0.75,0.5,0));
 app.ElleRobot = Elle(origin.T); % * transl(1.75,-0.25,0));
+
 app.LightCurtain = LightCurtain(SE3(transl(-1,-3.2,-0.5)), SE3(transl(-1,0.75,-0.5)), 2);
+app.Person = RobotPerson(transl(-3, -2, -1)*trotz(pi/2));
 
 x_pos = origin.t(1);
 y_pos = origin.t(2);

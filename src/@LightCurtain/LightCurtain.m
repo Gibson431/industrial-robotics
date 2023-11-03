@@ -30,11 +30,11 @@ classdef LightCurtain < handle
 
         end
 
-        function stop = checkCollision(self, vertex)
+        function stop = checkCollision(self, vertex, base)
             stop = 0;
-            for i = 1 : length(vertex(:,1))
-                if  vertex(i, 1) < self.leftTr.t(1)
-                    stop =1;
+            for i = 1 : length(vertex{1}(:,1))
+                if  vertex{1}(i,1)+base.t(1) > self.leftTr.t(1)
+                    stop = 1;
                 end
             end
         end
