@@ -32,6 +32,8 @@ classdef NedAndElleApp < matlab.apps.AppBase
         LightCurtain;
         Person;
         triggerCollisionDetect = false;
+        hasEStop;
+        EStopReal;
 
     end
 
@@ -434,6 +436,12 @@ classdef NedAndElleApp < matlab.apps.AppBase
             % Register the app with App Designer
             registerApp(app, app.UIFigure);
 
+            app.hasEStop = false;
+            if app.hasEStop
+                app.EStopReal = eStop();
+                disp('ardunio intialised')
+            end
+
             app.processLoop();
             disp('process loop commented out');
 
@@ -451,10 +459,18 @@ classdef NedAndElleApp < matlab.apps.AppBase
 
         function app = processLoop(app)
             while (true)
+                if app.hasEStop
+                    if app.EStopReal.checkEStop()
+                        app.EStopSwitch.Value = "On";
+                        app.AutoSwitch.Value = "Off";
+                    end
+                end
+
                 if (app.EStopSwitch.Value == "Off")
                     if (app.triggerCollisionDetect)
                         if (app.LightCurtain.checkCollision(app.Person.model.points(1), app.Person.model.base))
                             app.EStopSwitch.Value = "On";
+                            app.AutoSwitch.Value = "Off";
                             continue;
                         end
                         app.Person.MoveBase(transl(0,-0.1,0));
