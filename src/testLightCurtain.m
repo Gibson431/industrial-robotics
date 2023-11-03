@@ -7,11 +7,12 @@ hold on
 axis equal
 bottomLeft = SE3(transl(-0.5, -0.5, 0));
 bottomRight = SE3(transl(-0.5, 0.5, 0));
+RobotPerson(transl(0,0,0));
 
 laserStartPoint = [];
 laserEndPoint = [];
 % laserNormals = [bottomLeft(1)-bottomRight(1), bottomLeft(2)-bottomRight(2), 0];
-lc = LightCurtain(bottomLeft, bottomRight, 1)
+lc = LightCurtain(bottomLeft, bottomRight, 1);
 view(3)
 
 % Plot Light Curtain
@@ -69,7 +70,7 @@ for i = 0.01 :0.005 : 0.5
     kittyMesh_h.Vertices = UpdatedPoints(:,1:3);
     pause(1)
     for i = 1 : length(vertex(:,1))
-        if  vertex(i, 1) < bottomLeft(1)
+        if  vertex(i, 1) < bottomLeft.t(1)
             stop = 1;
         end
     end
