@@ -6,7 +6,7 @@ classdef Ned < omronTM5_700
         stepList = [];
         holdingObject = false;
         heldObject;
-        routeCount = 5;
+        routeCount = 1;
         macroStep = 20;
         microStep = 5;
         guesses = {[
@@ -32,7 +32,7 @@ classdef Ned < omronTM5_700
             0   -0.5655   -2.0019   -0.5655    1.3195         0
             0   -0.4084   -2.3806   -0.3770    1.3195         0 
             ]
-        gripperOffset = SE3(transl(0,0,0.25));
+        gripperOffset = SE3(transl(0,0,0.13));
         gripper;
         hasROS = false;
         controller;
@@ -44,7 +44,7 @@ classdef Ned < omronTM5_700
             if nargin ~= 0
                 baseTr = tr;
             end
-            self.model.base = baseTr * transl(0.9,0.5,0);
+            self.model.base = baseTr * transl(1.1,0.5,0);
             self.model.animate([0 0 0 0 0 0]);
             self.substrate = RobotSubstrate(self.substrateCount);
 
