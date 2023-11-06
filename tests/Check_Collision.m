@@ -58,7 +58,7 @@ for a = 1:size(qmatrix,1)
     for k = 1: size(tr,3)
         objectPointsAndOnes = [inv(tr(:,:,k)) * [objectPoints,ones(size(objectPoints,1),1)]']';
         updatedObjectPoints = objectPointsAndOnes(:,1:3);
-        algebraicDist = GetAlgebraicDist(updatedObjectPoints, centrePoint, radii)
+        algebraicDist = GetAlgebraicDist(updatedObjectPoints, centrePoint, radii);
         pointsInside = find(algebraicDist < 1);
         if pointsInside > 0
             collision = 1;

@@ -436,7 +436,7 @@ classdef NedAndElleApp < matlab.apps.AppBase
             % Register the app with App Designer
             registerApp(app, app.UIFigure);
 
-            app.hasEStop = true;
+            app.hasEStop = false;
             if app.hasEStop
                 app.EStopReal = eStop();
                 disp('ardunio intialised')
